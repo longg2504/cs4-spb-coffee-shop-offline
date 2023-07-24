@@ -5,6 +5,7 @@ import com.cg.model.Order;
 import com.cg.model.OrderDetail;
 import com.cg.model.dto.order.OrderReqDTO;
 import com.cg.model.dto.order.OrderResDTO;
+import com.cg.model.dto.orderDetail.OrderDetailByTableResDTO;
 import com.cg.service.order.IOrderService;
 import com.cg.service.orderDetail.IOrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,19 @@ public class OrderAPI {
 
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @GetMapping("/table/{tableId}")
+    public ResponseEntity<?> getOrderByTableId(@PathVariable Long tableId) {
+
+        Order order = orderService.findByTableId(tableId).orElseThrow(() -> {
+           throw new DataInputException("Table ID not exists");
+        });
+
+        List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO = orderDetailService.getOrderDetailByTableResDTO(order.getId());
+
+        return new ResponseEntity<>(getOrderDetailByTableResDTO, HttpStatus.OK);
     }
 
     // tạo mới order
