@@ -92,7 +92,7 @@
                             <p class="title-complaint">Vui lòng chọn bàn hoặc món trong menu</p>
 
                         </div>
-                        <div class="content-items">
+                        <div class="content-items hide">
                             <div class="item d-flex">
                                 <div class="image">
                                     <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
@@ -294,7 +294,6 @@
                                         <span>khong co ghi chu</span>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -330,7 +329,9 @@
     const page = {
         url: {
             getAllProducts: "http://localhost:9000/api/products",
-            getALLTablOrders: "http://localhost:9000/api/tableOrders"
+            getALLTabOrders: "http://localhost:9000/api/tableOrders",
+            getProductById: 'http://localhost:9000/api/products',
+            getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table'
 
         },
         elements: {},
@@ -344,12 +345,10 @@
     }
 
     page.elements.btnNavLink = $('.nav-tabs button.nav-link');
-
     page.elements.menuTab = $('#menu-tab');
     page.elements.tablePannel = $('#table-pannel');
     page.elements.menuPannel = $('#menu-pannel');
     page.elements.menuPannelContents = $('#menu-pannel .contents');
-
     page.elements.Search = $('#container-content-left');
     page.elements.divSearchProduct = $('#div-search-product');
 
@@ -357,13 +356,16 @@
     page.elements.contentItems = $('.content-items');
     page.elements.btnShowHide = $('#btnShowHide');
 
+    page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
+
+
     let product = new Product();
     let tableOrder = new TableOrder();
     let category = new Category();
 
     page.commands.renderTable = (tableOrder) => {
         return `
-            <div class="container-tab-item col-3">
+            <div class="container-tab-item col-3" data-id="${tableOrder.id}">
               <div class="tab-header  text-center">
                 <button style="border: none; background-color: none;">
                   <i class="fas fa-coffee"></i>
@@ -381,25 +383,24 @@
         const category = product.category
         const avatar = product.avatar
         return `
-
-            <div class="container-product-item">
-              <div class="image-product" style="height: 180px ;width: 180px;">
-                  <img src="${avatar.fileUrl}" style="height: 100%; width: 100%">
-              </div>
-              <div class="content-product text-center">
-                  <div class="product-title">
-                      ${product.title}
+            <div class="container-product-item"  data-id="${product.id}">
+                  <div   class="image-product" style="height: 180px ;width: 180px;">
+                      <img src="${avatar.fileUrl}" style="height: 100%; width: 100%">
                   </div>
-                  <div class="product-title-bottom">
-                  <span>
-                      ${product.price}
-                  </span>
-                  <span>
-                    ${product.unit}
-                  </span>
+                  <div class="content-product text-center">
+                      <div class="product-title" >
+                          ${product.title}
+                      </div>
+                      <div class="product-title-bottom">
+                      <span>
+                          ${product.price}
+                      </span>
+                      <span>
+                        ${product.unit}
+                      </span>
+                      </div>
                   </div>
-              </div>
-
+                </div>
   `
     }
 
@@ -432,7 +433,7 @@
         page.elements.tablePannel.empty();
         $.ajax({
             type: 'GET',
-            url: page.url.getALLTablOrders
+            url: page.url.getALLTabOrders
         })
             .done((data) => {
                 data.forEach(item => {
@@ -441,6 +442,10 @@
                     page.elements.tablePannel.prepend(str)
                 })
             })
+    }
+
+    page.commands.handleAddEventShowProductDetail = () => {
+        alert("abc");
     }
 
     page.commands.getAllProduct = () => {
@@ -472,10 +477,89 @@
         }
     }
 
+    page.commands.renderOrderDetail = (obj) => {
+        return `
+        <div class="item d-flex">
+            <div class="image">
+                <img src="${obj.avatar.fileUrl}"
+                     alt="">
+            </div>
+            <div class="item-content">
+                <div class="title-close d-flex justify-content-between">
+                    <span>${obj.title}</span>
+                    <button>
+                        <span>X</span>
+                    </button>
+                </div>
+                <div class="price-quantity d-flex justify-content-between">
+                    <span>Gia : ${obj.price}</span>
+                    <form action="">
+                        <div class="quantity d-flex">
+                            <button type="button"><i class="fas fa-minus"></i></button>
+                            <span>${obj.quantity}</span>
+                            <button type="button"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </form>
+                    <span>${obj.amount}</span>
+                </div>
+                <div class="note d-flex">
+                    <span>${obj.note}</span>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+
+    page.commands.getOrderDetailsByTableId = (tableId) => {
+        $.ajax({
+            type: 'GET',
+            url: page.url.getOrderDetailsByTableId + '/' + tableId
+        })
+            .done((data) => {
+                console.log(data)
+                if (data.length > 0) {
+                    page.elements.contentItems.empty();
+                    $.each(data, (index, item) => {
+                        const str = page.commands.renderOrderDetail(item);
+                        page.elements.contentItems.append(str);
+                    })
+
+                    page.elements.boardWaiting.addClass('hide');
+                    page.elements.contentItems.removeClass('hide');
+                }
+                else {
+                    page.elements.contentItems.addClass('hide');
+                    page.elements.boardWaiting.removeClass('hide');
+                }
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR)
+                page.elements.contentItems.addClass('hide');
+                page.elements.boardWaiting.removeClass('hide');
+            })
+    }
+    
+    
+    page.commands.getProductById = (productId) => {
+        $.ajax({
+            type: 'GET',
+            url: page.url.getProductById + '/' + productId
+        })
+            .done((data) => {
+                console.log(data)
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR)
+            })
+    }
+
     page.loadData = () => {
         page.commands.getAllTable();
 
         page.commands.getAllProduct();
+
+
 
     }
 
@@ -485,6 +569,19 @@
             event.target // newly activated tab
             event.relatedTarget // previous active tab
         })
+
+
+        page.elements.tablePannel.on('click', '.container-tab-item', function() {
+            const tableId = $(this).data('id');
+            page.commands.getOrderDetailsByTableId(tableId);
+        })
+
+
+        page.elements.menuPannel.on('click', '.container-product-item', function() {
+            const productId = $(this).data('id');
+            page.commands.getProductById(productId);
+        })
+
 
         page.elements.btnNavLink.on('click', () => {
             page.commands.showHideSearchDiv();
@@ -498,12 +595,17 @@
 
 
         page.elements.tablePannel.on('click', '.tab-content-item', () => {
-            page.elements.menuTab.trigger('click');
 
+            page.elements.menuTab.trigger('click');
             page.commands.showHideSearchDiv();
 
-            page.elements.boardWaiting.toggle('hide');
-            page.elements.contentItems.toggle('hide');
+            // page.elements.boardWaiting.toggle('hide');
+            // page.elements.contentItems.toggle('hide');
+
+        })
+
+        page.elements.btnShowProductDetailModal.on('click' , () => {
+            page.commands.handleAddEventShowProductDetail();
         })
     }
 

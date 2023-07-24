@@ -21,7 +21,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
                 "od.quantity, " +
                 "od.amount, " +
                 "od.product.unit," +
-                "od.note " +
+                "od.note," +
+                "od.product.productAvatar " +
             ")" +
             "FROM OrderDetail AS od " +
             "WHERE od.order.id = :orderId"

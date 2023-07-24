@@ -24,16 +24,6 @@ public class OrderResDTO {
     private StaffDTO staff;
     private TableOrderDTO tableOrder;
     private List<OrderDetailDTO> orderDetails;
-
-//    public OrderResDTO(Long id, Staff staff, TableOrder tableOrder, OrderDetail orderDetail){
-//        this.id = id;
-//        this.staff = staff.toStaffDTO();
-//        this.tableOrder= tableOrder.toTableOrderDTO();
-//        this.orderDetails = orderDetail.toOrderDetailDTO();
-//    }
-
-
-
-
+    private Boolean paid;
 
 }
