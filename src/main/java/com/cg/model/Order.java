@@ -42,6 +42,8 @@ public class Order extends BaseEntity {
     @JsonIgnore
     private List<OrderDetail> orderDetails;
 
+    private Boolean paid;
+
 
 
     public OrderResDTO toOrderResDTO(){

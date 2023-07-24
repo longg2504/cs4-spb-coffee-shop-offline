@@ -2,6 +2,7 @@ package com.cg.service.orderDetail;
 
 import com.cg.model.OrderDetail;
 import com.cg.model.dto.order.OrderResDTO;
+import com.cg.model.dto.orderDetail.OrderDetailByTableResDTO;
 import com.cg.repository.OrderDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,11 @@ public class OrderDetailServiceImpl implements IOrderDetailService{
     @Override
     public Optional<OrderDetail> findById(Long id) {
         return orderDetailRepository.findById(id);
+    }
+
+    @Override
+    public List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO(Long orderId) {
+        return orderDetailRepository.getOrderDetailByTableResDTO(orderId);
     }
 
     @Override
