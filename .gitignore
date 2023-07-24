@@ -1,0 +1,10 @@
+target/
+
+.idea
+.git
+.gitignore
+
+*.DS_Store
+*.DS_Store/
+
+application-dev.properties
