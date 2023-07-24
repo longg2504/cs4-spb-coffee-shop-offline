@@ -24,20 +24,14 @@ public class OrderAPI {
     @Autowired
     private IOrderDetailService orderDetailService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllOrder(){
-        List<Order> orders = orderService.findAll();
 
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
 
     @GetMapping("/table/{tableId}")
     public ResponseEntity<?> getOrderByTableId(@PathVariable Long tableId) {
 
         Order order = orderService.findByTableId(tableId).orElseThrow(() -> {
-           throw new DataInputException("Table ID not exists");
+           throw new DataInputException("Bàn không tồn tại");
         });
 
         List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO = orderDetailService.getOrderDetailByTableResDTO(order.getId());
@@ -58,17 +52,11 @@ public class OrderAPI {
     @PostMapping("/{id}/order-details")
     public ResponseEntity<?> createOrderDetail(@RequestBody OrderReqDTO orderReqDTO, @PathVariable Long id){
 
-        OrderResDTO orderResDTO = orderService.createOrderDetail(orderReqDTO, id);
+        OrderResDTO orderResDTO = orderService.updateOrderDetail(orderReqDTO, id);
         return new ResponseEntity<>(orderResDTO, HttpStatus.CREATED);
     }
 
-    // sửa order
-    @PatchMapping("/{id}/order-details")
-    public ResponseEntity<?> updateOrderDetail(@RequestBody OrderReqDTO orderReqDTO, @PathVariable Long id){
 
-       OrderResDTO orderResDTO = orderService.updateOrderDetail(orderReqDTO, id);
-         return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
-    }
 
     // xóa order
     @DeleteMapping("/{orderId}/order-details/{orderDetailId}")

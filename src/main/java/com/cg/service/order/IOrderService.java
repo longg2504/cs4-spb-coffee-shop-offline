@@ -14,9 +14,8 @@ public interface IOrderService extends IGeneralService<Order,Long> {
 
     OrderResDTO createOrder(OrderReqDTO orderReqDTO);
 
-    OrderResDTO createOrderDetail(OrderReqDTO orderReqDTO, Long idOrder);
+    OrderResDTO updateOrderDetail(OrderReqDTO orderReqDTO, Long idOrder);
 
-    OrderResDTO updateOrderDetail(OrderReqDTO orderReqDTO, Long id);
 
     OrderResDTO deleteByIdOrder(Long orderId,Long orderDetailId);
 }

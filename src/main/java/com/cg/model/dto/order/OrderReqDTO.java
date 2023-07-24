@@ -21,4 +21,5 @@ public class OrderReqDTO {
     private TableOrderDTO tableOrder;
     private BigDecimal totalAmount;
     private OrderDetailDTO orderDetail;
+    private Boolean paid;
 }
