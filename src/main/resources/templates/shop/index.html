@@ -498,12 +498,13 @@
 
 
         page.elements.tablePannel.on('click', '.tab-content-item', () => {
-            page.elements.menuTab.trigger('click');
 
+            page.elements.menuTab.trigger('click');
             page.commands.showHideSearchDiv();
 
             page.elements.boardWaiting.toggle('hide');
             page.elements.contentItems.toggle('hide');
+
         })
     }
 

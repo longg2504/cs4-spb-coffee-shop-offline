@@ -1,26 +1,20 @@
 package com.cg.model.dto.tableOrder;
 
-import com.cg.model.TableOrder;
 import com.cg.model.enums.EStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TableOrderReqDTO {
-
+@Accessors(chain = true)
+public class TableOrderResDTO {
+    private Long id;
     private String title;
     private EStatus status;
-
-
-    public TableOrder toTableOrderReqDTO() {
-        return new TableOrder()
-                .setTitle(title)
-                .setStatus(EStatus.ROLE_STOCKING);
-    }
 }

@@ -1,6 +1,8 @@
 package com.cg.model.dto.orderDetail;
 
 
+import com.cg.model.ProductAvatar;
+import com.cg.model.dto.productAvatar.ProductAvatarResDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,17 @@ public class OrderDetailByTableResDTO {
     private BigDecimal amount;
     private String unit;
     private String note;
+    private ProductAvatarResDTO avatar;
 
-
+    public OrderDetailByTableResDTO(Long orderDetailId, Long productId, String title, BigDecimal price, Integer quantity, BigDecimal amount, String unit, String note, ProductAvatar avatar) {
+        this.orderDetailId = orderDetailId;
+        this.productId = productId;
+        this.title = title;
+        this.price = price;
+        this.quantity = quantity;
+        this.amount = amount;
+        this.unit = unit;
+        this.note = note;
+        this.avatar = avatar.toProductAvatarDTO();
+    }
 }

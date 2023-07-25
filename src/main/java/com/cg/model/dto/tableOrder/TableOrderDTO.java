@@ -13,12 +13,12 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 public class TableOrderDTO {
-    private Long id;
+    private String id;
     private String title;
     private String status;
 
     public TableOrderDTO(Long id, String title, EStatus status){
-        this.id=id;
+        this.id= String.valueOf(id);
         this.title=title;
         this.status=status.getValue();
     }

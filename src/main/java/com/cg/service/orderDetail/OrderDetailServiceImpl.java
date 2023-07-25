@@ -28,6 +28,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService{
 
     @Override
     public List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO(Long orderId) {
+
         return orderDetailRepository.getOrderDetailByTableResDTO(orderId);
     }
 
@@ -51,4 +52,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService{
     public OrderDetail findByOrderDetailByIdProductAndIdOrder(Long idProduct,Long idOrder, String note) {
         return orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(idProduct,idOrder, note);
     }
+
+
+
 }
