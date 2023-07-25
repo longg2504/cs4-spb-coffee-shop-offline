@@ -110,7 +110,6 @@ public class OrderAPI {
         }
 
         orderService.deleteByIdOrder(orderId, orderDetailId);
-
         OrderResDTO orderResDTO = order.toOrderResDTO();
         return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
     }
