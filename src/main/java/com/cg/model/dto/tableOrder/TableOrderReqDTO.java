@@ -23,4 +23,12 @@ public class TableOrderReqDTO {
                 .setTitle(title)
                 .setStatus(EStatus.ROLE_STOCKING);
     }
+
+    public TableOrder toTableOrder(Long tableOrderId) {
+        return new TableOrder()
+                .setId(tableOrderId)
+                .setTitle(title)
+                .setStatus(EStatus.ROLE_STOCKING)
+                ;
+    }
 }

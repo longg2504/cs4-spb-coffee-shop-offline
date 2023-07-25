@@ -11,4 +11,6 @@ import java.util.List;
 public interface ITableOrderService extends IGeneralService<TableOrder,Long> {
     List<TableOrderDTO> findAllTableOrderDTO();
     TableOrderResDTO createTableOrder(TableOrderReqDTO tableOrderReqDTO);
+
+    TableOrderResDTO updateTableOrder(Long tableOrderId,TableOrderReqDTO tableOrderReqDTO);
 }

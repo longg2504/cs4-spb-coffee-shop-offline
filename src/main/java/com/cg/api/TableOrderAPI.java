@@ -56,7 +56,7 @@ public class TableOrderAPI {
            throw new DataInputException("Mã danh mục không tồn tại");
         });
 
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        TableOrderResDTO tableOrderResDTO = tableOrderService.updateTableOrder(orderTableId,tableOrderReqDTO);
+        return new ResponseEntity<>(tableOrderResDTO,HttpStatus.OK);
     }
 }

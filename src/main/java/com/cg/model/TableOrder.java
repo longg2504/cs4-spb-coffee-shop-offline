@@ -41,9 +41,17 @@ public class TableOrder extends BaseEntity {
                 ;
     }
 
-    public TableOrderResDTO toTableOrderResDTO() {
+    public TableOrderResDTO toCreateTableOrderResDTO() {
         return new TableOrderResDTO()
                 .setId(null)
+                .setTitle(title)
+                .setStatus(EStatus.ROLE_STOCKING)
+                ;
+    }
+
+    public TableOrderResDTO toUpdateTableOrderResDTO(Long tableOrderId) {
+        return new TableOrderResDTO()
+                .setId(tableOrderId)
                 .setTitle(title)
                 .setStatus(EStatus.ROLE_STOCKING)
                 ;

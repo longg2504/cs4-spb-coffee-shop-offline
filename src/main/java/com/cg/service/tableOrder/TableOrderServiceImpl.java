@@ -51,8 +51,16 @@ public class TableOrderServiceImpl implements ITableOrderService{
         TableOrder tableOrder = tableOrderReqDTO.toTableOrderReqDTO();
         tableOrderRepository.save(tableOrder);
 
-        TableOrderResDTO tableOrderResDTO = tableOrder.toTableOrderResDTO();
+        TableOrderResDTO tableOrderResDTO = tableOrder.toCreateTableOrderResDTO();
 
+        return tableOrderResDTO;
+    }
+
+    @Override
+    public TableOrderResDTO updateTableOrder(Long tableOrderId, TableOrderReqDTO tableOrderReqDTO) {
+        TableOrder tableOrder = tableOrderReqDTO.toTableOrder(tableOrderId);
+        tableOrderRepository.save(tableOrder);
+        TableOrderResDTO tableOrderResDTO = tableOrder.toUpdateTableOrderResDTO(tableOrderId);
         return tableOrderResDTO;
     }
 }

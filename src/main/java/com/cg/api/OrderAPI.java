@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +38,7 @@ public class OrderAPI {
     private AppUtils appUtils;
 
 
+
     @GetMapping("/table/{tableId}")
     public ResponseEntity<?> getOrderByTableId(@PathVariable("tableId") String tableIdStr) {
         if (!validateUtils.isNumberValid(tableIdStr)) {
@@ -44,16 +46,19 @@ public class OrderAPI {
         }
         Long tableId = Long.valueOf(tableIdStr);
 
-        Order order = orderService.findByTableId(tableId).orElseThrow(() -> {
-            throw new DataInputException("Bàn không tồn tại");
-        });
+        Optional<Order> orderOptional = orderService.findByTableId(tableId);
 
-        List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO = orderDetailService.getOrderDetailByTableResDTO(order.getId());
-
-        if (getOrderDetailByTableResDTO.size() == 0) {
+        if (orderOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(getOrderDetailByTableResDTO, HttpStatus.OK);
+
+        List<OrderDetailByTableResDTO> orderDetails = orderDetailService.getOrderDetailByTableResDTO(orderOptional.get().getId());
+
+        if (orderDetails.size() == 0) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(orderDetails, HttpStatus.OK);
     }
 
     // tạo mới order
@@ -88,6 +93,8 @@ public class OrderAPI {
     }
 
 
+
+
     // xóa order
     @DeleteMapping("/{orderId}/order-details/{orderDetailId}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long orderId, @PathVariable Long orderDetailId) {
@@ -95,16 +102,12 @@ public class OrderAPI {
             throw new DataInputException("Mã đặt hàng không tồn tại");
         });
 
-//        OrderDetail orderDetail = orderDetailService.findById(orderDetailId).orElseThrow(() -> {
-//           throw new DataInputException("Mã sản phẩm không tồn tại");
-//        });
         Optional<OrderDetail> optionalOrderDetail = orderDetailService.findById(orderDetailId);
         if (optionalOrderDetail.isEmpty()) {
             Map<String, String> data = new HashMap<>();
             data.put("message", "Mã sản phẩm không tồn tại");
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
-
 
         orderService.deleteByIdOrder(orderId, orderDetailId);
 

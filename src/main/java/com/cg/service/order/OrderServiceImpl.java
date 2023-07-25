@@ -65,7 +65,6 @@ public class OrderServiceImpl implements IOrderService {
     public OrderResDTO createOrder(OrderReqDTO orderReqDTO) {
 
         TableOrder tableOrder = tableOrderRepository.findById(Long.valueOf(orderReqDTO.getTableOrder().getId())).get();
-
         if (tableOrder.getStatus().equals(EStatus.ROLE_OUT_OF_STOCK)) {
             throw new DataInputException("bàn đang hoạt động");
         }
@@ -138,7 +137,6 @@ public class OrderServiceImpl implements IOrderService {
         Product product = productRepository.findById(Long.valueOf(orderReqDTO.getOrderDetail().getProduct().getId())).get();
         OrderDetail orderDetail = orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(product.getId(), idOrder, orderReqDTO.getOrderDetail().getNote());
         if (orderDetail != null) {
-
             orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
             orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
             orderDetail.setPrice(product.getPrice());
@@ -166,6 +164,7 @@ public class OrderServiceImpl implements IOrderService {
         } else {
             orderDetail = new OrderDetail();
             orderDetail.setProduct(product);
+
             orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
             orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
             orderDetail.setPrice(product.getPrice());
@@ -192,7 +191,6 @@ public class OrderServiceImpl implements IOrderService {
         deleteOrderDetailById(orderDetailId);
         Order order = orderRepository.findById(orderId).get();
         order.setTotalAmount(order.getTotalAmount().subtract(orderDetail.getAmount()));
-        BigDecimal a = order.getTotalAmount();
         if (order.getTotalAmount().longValue() == 0l) {
             order.setPaid(true);
             order.getTableOrder().setStatus(EStatus.ROLE_STOCKING);
@@ -200,7 +198,6 @@ public class OrderServiceImpl implements IOrderService {
         OrderResDTO orderResDTO = order.toOrderResDTO();
         return orderResDTO;
     }
-
 
 
     public void deleteOrderDetailById(Long orderDetailId) {
