@@ -57,7 +57,7 @@
                         </div>
                         <div>
 
-                        <div class="tab-pane fade" id="menu-pannel" role="tabpanel" aria-labelledby="menu-tab"
+                        <div class="tab-pane fade hide" id="menu-pannel" role="tabpanel" aria-labelledby="menu-tab"
                              tabindex="0">
 
 
@@ -74,10 +74,10 @@
             <div class="header">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item col-3" role="presentation">
-                        <button class="nav-link active col-12" id="table-tab" data-bs-toggle="tab"
+                        <button class="nav-link active col-12" id="table-current" data-bs-toggle="tab"
                                 data-bs-target="#table-pannel"
-                                type="button" role="tab" aria-controls="table-pannel" aria-selected="true"><i
-                                class="fas fa-tablets" style="margin-right: 5px"></i>Bàn
+                                type="button" role="tab" aria-controls="table-pannel" aria-selected="true">
+                            <i class="fas fa-tablets" style="margin-right: 5px"></i><span>Bàn</span>
                         </button>
                     </li>
                 </ul>
@@ -93,6 +93,9 @@
 
                         </div>
                         <div class="content-items hide">
+
+<<<<<<< HEAD
+                            </div>
                             <div class="item d-flex">
                                 <div class="image">
                                     <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
@@ -265,52 +268,21 @@
                                         <span>khong co ghi chu</span>
                                     </div>
                                 </div>
-
                             </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-                            </div>
+=======
+>>>>>>> feature/update-validate-order
                         </div>
                     </div>
 
                     <div class="wrapper-footer">
                         <div class="wrapper-footer-header">
                             <span>Tổng tiền</span>
-                            <span>0$</span>
+                            <span id="totalAmount">0 vnd</span>
                         </div>
                         <div class="wrapper-footer-btn mt-5">
-
                             <button type="button" class="btn btn-success" id="btnCreateProduct">
                                 <i class="fas fa-money-bill"></i>Thanh Toán
                             </button>
-                            <!-- <button id="btnShowHide">
-                              show hide
-                            </button> -->
                         </div>
                     </div>
                 </div>
@@ -318,7 +290,7 @@
         </div>
 
     </div>
-
+</div>
 </body>
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/js/jquery.validate.min.js"></script>
@@ -331,7 +303,13 @@
             getAllProducts: "http://localhost:9000/api/products",
             getALLTabOrders: "http://localhost:9000/api/tableOrders",
             getProductById: 'http://localhost:9000/api/products',
+<<<<<<< HEAD
             getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table'
+=======
+            getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table',
+            getOrderByTableId : 'http://localhost:9000/api/orders/table'
+
+>>>>>>> feature/update-validate-order
 
         },
         elements: {},
@@ -351,10 +329,15 @@
     page.elements.menuPannelContents = $('#menu-pannel .contents');
     page.elements.Search = $('#container-content-left');
     page.elements.divSearchProduct = $('#div-search-product');
-
     page.elements.boardWaiting = $('.board');
     page.elements.contentItems = $('.content-items');
     page.elements.btnShowHide = $('#btnShowHide');
+    page.elements.tabHeader = $('.tab-header');
+    page.elements.tabContentItem = $('.tab-content-item');
+    page.elements.wrapperFooter = $('.wrapper-footer');
+    page.elements.tableCurrent = $('#table-current');
+    page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
+
 
     page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
 
@@ -364,14 +347,20 @@
     let category = new Category();
 
     page.commands.renderTable = (tableOrder) => {
+
         return `
             <div class="container-tab-item col-3" data-id="${tableOrder.id}">
+<<<<<<< HEAD
               <div class="tab-header  text-center">
                 <button style="border: none; background-color: none;">
+=======
+              <div  class="tab-header text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
+                <button style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
+>>>>>>> feature/update-validate-order
                   <i class="fas fa-coffee"></i>
                 </button>
               </div>
-              <div class="tab-content-item text-center">
+              <div class="tab-content-item  text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
                 <span>${tableOrder.status}</span>
                 <p>${tableOrder.title}</p>
                </div>
@@ -380,7 +369,6 @@
     }
 
     page.commands.renderProduct = (product) => {
-        const category = product.category
         const avatar = product.avatar
         return `
             <div class="container-product-item"  data-id="${product.id}">
@@ -425,22 +413,21 @@
 
     }
 
+
     page.commands.getAllTable = () => {
-        // const tablePannel = document.querySelector('#table-pannel');
-        // tablePannel.innerHTML = '';
-        // const str = page.commands.renderTable();
-        // tablePannel.innerHTML += str;
-        page.elements.tablePannel.empty();
         $.ajax({
             type: 'GET',
             url: page.url.getALLTabOrders
         })
             .done((data) => {
-                data.forEach(item => {
-                    tableOrder = item;
-                    let str = page.commands.renderTable(tableOrder)
-                    page.elements.tablePannel.prepend(str)
-                })
+                    page.elements.tablePannel.empty();
+                    data.forEach(item => {
+                        tableOrder = item;
+                        let str = page.commands.renderTable(tableOrder)
+                        page.elements.tablePannel.prepend(str)
+
+                    })
+
             })
     }
 
@@ -455,11 +442,6 @@
             url: page.url.getAllProducts
         })
             .done((data) => {
-                // console.log(data[0]);
-                // category = data[0].category;
-                // console.log(category);
-                // const str2 = page.commands.renderSearch(category)
-                // page.elements.Search.prepend(str2);
                 data.forEach(item => {
                     product = item;
                     const str = page.commands.renderProduct(product)
@@ -503,7 +485,11 @@
                     <span>${obj.amount}</span>
                 </div>
                 <div class="note d-flex">
+<<<<<<< HEAD
                     <span>${obj.note}</span>
+=======
+                    <span>Note: ${obj.note}</span>
+>>>>>>> feature/update-validate-order
                 </div>
             </div>
         </div>
@@ -511,6 +497,10 @@
     }
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature/update-validate-order
     page.commands.getOrderDetailsByTableId = (tableId) => {
         $.ajax({
             type: 'GET',
@@ -518,6 +508,7 @@
         })
             .done((data) => {
                 console.log(data)
+<<<<<<< HEAD
                 if (data.length > 0) {
                     page.elements.contentItems.empty();
                     $.each(data, (index, item) => {
@@ -525,21 +516,55 @@
                         page.elements.contentItems.append(str);
                     })
 
+=======
+
+                if (data && data.length > 0) {
+                    page.elements.contentItems.empty();
+
+                    let totalAmount = 0;
+
+
+
+                    $.each(data, (index, item) => {
+                        const str = page.commands.renderOrderDetail(item);
+                        page.elements.contentItems.append(str);
+                        totalAmount += item.amount;
+                    })
+
+                    $('#totalAmount').text(totalAmount + ' vnd')
+
+
+>>>>>>> feature/update-validate-order
                     page.elements.boardWaiting.addClass('hide');
                     page.elements.contentItems.removeClass('hide');
                 }
                 else {
+<<<<<<< HEAD
                     page.elements.contentItems.addClass('hide');
                     page.elements.boardWaiting.removeClass('hide');
+=======
+                    page.elements.boardWaiting.removeClass('hide');
+                    page.elements.contentItems.addClass('hide');
+
+                    $('#totalAmount').text('0 vnd')
+>>>>>>> feature/update-validate-order
                 }
             })
             .fail((jqXHR) => {
                 console.log(jqXHR)
+<<<<<<< HEAD
                 page.elements.contentItems.addClass('hide');
                 page.elements.boardWaiting.removeClass('hide');
             })
     }
     
+=======
+                page.elements.boardWaiting.removeClass('hide');
+                page.elements.contentItems.addClass('hide');
+            })
+    }
+
+>>>>>>> feature/update-validate-order
     
     page.commands.getProductById = (productId) => {
         $.ajax({
@@ -558,9 +583,12 @@
         page.commands.getAllTable();
 
         page.commands.getAllProduct();
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> feature/update-validate-order
     }
 
     page.initializeControlEvent = () => {
@@ -573,6 +601,10 @@
 
         page.elements.tablePannel.on('click', '.container-tab-item', function() {
             const tableId = $(this).data('id');
+<<<<<<< HEAD
+=======
+            page.elements.tableCurrent.find('span').text('Bàn ' + tableId);
+>>>>>>> feature/update-validate-order
             page.commands.getOrderDetailsByTableId(tableId);
         })
 
@@ -580,6 +612,10 @@
         page.elements.menuPannel.on('click', '.container-product-item', function() {
             const productId = $(this).data('id');
             page.commands.getProductById(productId);
+<<<<<<< HEAD
+=======
+            page.commands.handleAddEventShowProductDetail();
+>>>>>>> feature/update-validate-order
         })
 
 
@@ -588,22 +624,23 @@
         })
 
 
-        page.elements.btnShowHide.on('click', () => {
-            page.elements.boardWaiting.toggle('hide');
-            page.elements.contentItems.toggle('hide');
-        })
-
-
         page.elements.tablePannel.on('click', '.tab-content-item', () => {
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/update-validate-order
             page.elements.menuTab.trigger('click');
             page.commands.showHideSearchDiv();
+        })
 
+<<<<<<< HEAD
             // page.elements.boardWaiting.toggle('hide');
             // page.elements.contentItems.toggle('hide');
 
         })
 
+=======
+>>>>>>> feature/update-validate-order
         page.elements.btnShowProductDetailModal.on('click' , () => {
             page.commands.handleAddEventShowProductDetail();
         })

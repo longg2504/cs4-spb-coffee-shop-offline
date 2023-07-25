@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Setter
 @Accessors(chain = true)
 public class ProductDTO {
-    private Long id;
+    private String id;
     private String title;
     private BigDecimal price;
 
@@ -27,7 +27,7 @@ public class ProductDTO {
     private ProductAvatarResDTO avatar;
 
     public ProductDTO(Long id, String title, BigDecimal price,String unit, Category category, ProductAvatar avatar){
-        this.id=id;
+        this.id= String.valueOf(id);
         this.title=title;
         this.price=price;
         this.unit = unit;

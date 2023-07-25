@@ -60,7 +60,7 @@ public class Product extends BaseEntity {
 
     public ProductDTO toProductDTO() {
          return new ProductDTO()
-                 .setId(id)
+                 .setId(String.valueOf(id))
                  .setTitle(title)
                  .setPrice(price)
                  .setUnit(unit)

@@ -43,6 +43,7 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public Optional<Order> findByTableId(Long tableId) {
         return orderRepository.findByTableId(tableId);
+
     }
 
     @Override
@@ -62,12 +63,12 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public OrderResDTO createOrder(OrderReqDTO orderReqDTO) {
-        TableOrder tableOrder = tableOrderRepository.findById(orderReqDTO.getTableOrder().getId()).get();
 
+        TableOrder tableOrder = tableOrderRepository.findById(Long.valueOf(orderReqDTO.getTableOrder().getId())).get();
         if (tableOrder.getStatus().equals(EStatus.ROLE_OUT_OF_STOCK)) {
             throw new DataInputException("bàn đang hoạt động");
         }
-        Staff staff = staffRepository.findById(orderReqDTO.getStaff().getId()).get();
+        Staff staff = staffRepository.findById(Long.valueOf(orderReqDTO.getStaff().getId())).get();
 
 
         Order order = null;
@@ -87,9 +88,9 @@ public class OrderServiceImpl implements IOrderService {
         order = orderRepository.save(order);
 
 
-        Long idProduct = orderReqDTO.getOrderDetail().getProduct().getId();
-        Integer quantity = orderReqDTO.getOrderDetail().getQuantity();
-        Product product = productRepository.findById(idProduct).get();
+        String idProduct = orderReqDTO.getOrderDetail().getProduct().getId();
+        Integer quantity = Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity());
+        Product product = productRepository.findById(Long.valueOf(idProduct)).get();
 
 
         OrderDetail orderDetail = orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(product.getId(), order.getId(), orderReqDTO.getOrderDetail().getNote());
@@ -123,21 +124,19 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public OrderResDTO updateOrderDetail(OrderReqDTO orderReqDTO, Long idOrder) {
-        TableOrder tableOrder = tableOrderRepository.findById(orderReqDTO.getTableOrder().getId()).get();
+        TableOrder tableOrder = tableOrderRepository.findById(Long.valueOf(orderReqDTO.getTableOrder().getId())).get();
         if (tableOrder == null) {
             throw new DataInputException("Bàn ko tồn tại");
         }
-        Staff staff = staffRepository.findById(orderReqDTO.getStaff().getId()).get();
+        Staff staff = staffRepository.findById(Long.valueOf(orderReqDTO.getStaff().getId())).get();
         if (staff == null) {
             throw new DataInputException("Nhân viên ko tồn tại");
         }
-
         Order order = orderRepository.findById(idOrder).get();
-        Product product = productRepository.findById(orderReqDTO.getOrderDetail().getProduct().getId()).get();
+        Product product = productRepository.findById(Long.valueOf(orderReqDTO.getOrderDetail().getProduct().getId())).get();
         OrderDetail orderDetail = orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(product.getId(), idOrder, orderReqDTO.getOrderDetail().getNote());
         if (orderDetail != null) {
-
-            orderDetail.setQuantity(orderReqDTO.getOrderDetail().getQuantity());
+            orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
             orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
             orderDetail.setPrice(product.getPrice());
             orderDetail.setOrder(order);
@@ -164,7 +163,7 @@ public class OrderServiceImpl implements IOrderService {
         } else {
             orderDetail = new OrderDetail();
             orderDetail.setProduct(product);
-            orderDetail.setQuantity(orderReqDTO.getOrderDetail().getQuantity());
+            orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
             orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
             orderDetail.setPrice(product.getPrice());
             orderDetail.setOrder(order);
@@ -186,9 +185,14 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public OrderResDTO deleteByIdOrder(Long orderId, Long orderDetailId) {
-
+        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId).get();
         deleteOrderDetailById(orderDetailId);
         Order order = orderRepository.findById(orderId).get();
+        order.setTotalAmount(order.getTotalAmount().subtract(orderDetail.getAmount()));
+        if (order.getTotalAmount().longValue() == 0l) {
+            order.setPaid(true);
+            order.getTableOrder().setStatus(EStatus.ROLE_STOCKING);
+        }
         OrderResDTO orderResDTO = order.toOrderResDTO();
         return orderResDTO;
     }
@@ -196,6 +200,5 @@ public class OrderServiceImpl implements IOrderService {
     public void deleteOrderDetailById(Long orderDetailId) {
         orderDetailRepository.deleteById(orderDetailId);
     }
-
 
 }

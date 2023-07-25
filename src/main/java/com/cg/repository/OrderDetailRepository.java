@@ -37,4 +37,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
 
      @Query("SELECT SUM(odt.amount) FROM OrderDetail AS odt WHERE odt.order.id = :orderId")
      BigDecimal findByOrderByIdSumAmount(@Param("orderId") Long orderId);
+
+
 }

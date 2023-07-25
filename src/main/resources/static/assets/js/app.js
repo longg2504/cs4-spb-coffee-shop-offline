@@ -63,6 +63,7 @@ class Category {
     }
 }
 
+
 // $(function() {
 //     $(".num-space").number(true, 0, ',', ' ');
 //     $(".num-point").number(true, 0, ',', '.');
