@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -30,13 +31,19 @@ public class OrderAPI {
     @GetMapping("/table/{tableId}")
     public ResponseEntity<?> getOrderByTableId(@PathVariable Long tableId) {
 
-        Order order = orderService.findByTableId(tableId).orElseThrow(() -> {
-            throw new DataInputException("Bàn không tồn tại");
-        });
+        Optional<Order> orderOptional = orderService.findByTableId(tableId);
 
-        List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO = orderDetailService.getOrderDetailByTableResDTO(order.getId());
+        if (orderOptional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
 
-        return new ResponseEntity<>(getOrderDetailByTableResDTO, HttpStatus.OK);
+        List<OrderDetailByTableResDTO> orderDetails = orderDetailService.getOrderDetailByTableResDTO(orderOptional.get().getId());
+
+        if (orderDetails.size() == 0) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(orderDetails, HttpStatus.OK);
     }
 
     // tạo mới order
