@@ -177,7 +177,8 @@
 
 
 
-
+    let currentTable = 0;
+    let tableStatus = 'EMPTY';
     let product = new Product();
     let tableOrder = new TableOrder();
     let category = new Category();
@@ -185,7 +186,7 @@
     page.commands.renderTable = (tableOrder) => {
 
         return `
-            <div class="container-tab-item col-3" data-id="${tableOrder.id}">
+            <div class="container-tab-item col-3" data-id="${tableOrder.id}" data-status="${tableOrder.status}">
               <div  class="tab-header text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
                 <button style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
                   <i class="fas fa-coffee"></i>
@@ -407,9 +408,10 @@
 
 
         page.elements.tablePannel.on('click', '.container-tab-item', function() {
-            const tableId = $(this).data('id');
-            page.elements.tableCurrent.find('span').text('Bàn ' + tableId);
-            page.commands.getOrderDetailsByTableId(tableId);
+            currentTable = $(this).data('id');
+            tableStatus = $(this).data('status');
+            page.elements.tableCurrent.find('span').text('Bàn ' + currentTable);
+            page.commands.getOrderDetailsByTableId(currentTable);
         })
 
 

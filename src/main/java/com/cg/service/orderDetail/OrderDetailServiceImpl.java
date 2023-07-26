@@ -53,6 +53,15 @@ public class OrderDetailServiceImpl implements IOrderDetailService{
         return orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(idProduct,idOrder, note);
     }
 
+    @Override
+    public OrderDetail findByOrderId(Long orderId) {
+        return orderDetailRepository.findByOrderId(orderId);
+    }
+
+    @Override
+    public List<OrderDetail> findListOrderDetailByOrderId(Long orderId) {
+        return orderDetailRepository.findListOrderDetailByOrderId(orderId);
+    }
 
 
 }

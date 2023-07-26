@@ -3,12 +3,15 @@ package com.cg.api;
 import com.cg.exception.DataInputException;
 import com.cg.model.Order;
 import com.cg.model.OrderDetail;
+import com.cg.model.TableOrder;
 import com.cg.model.dto.order.OrderDTO;
 import com.cg.model.dto.order.OrderReqDTO;
 import com.cg.model.dto.order.OrderResDTO;
 import com.cg.model.dto.orderDetail.OrderDetailByTableResDTO;
+import com.cg.model.enums.EStatus;
 import com.cg.service.order.IOrderService;
 import com.cg.service.orderDetail.IOrderDetailService;
+import com.cg.service.tableOrder.ITableOrderService;
 import com.cg.utils.AppUtils;
 import com.cg.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,8 @@ public class OrderAPI {
 
     @Autowired
     private ValidateUtils validateUtils;
+    @Autowired
+    private ITableOrderService tableOrderService;
 
 
     @Autowired
@@ -63,33 +68,41 @@ public class OrderAPI {
     }
 
     // tạo mới order
-    @PostMapping
-    public ResponseEntity<?> saveOrder(@RequestBody OrderReqDTO orderReqDTO, BindingResult bindingResult) {
+//    @PostMapping
+//    public ResponseEntity<?> saveOrder(@RequestBody OrderReqDTO orderReqDTO, BindingResult bindingResult) {
+//
+//        new OrderReqDTO().validate(orderReqDTO, bindingResult);
+//        if (bindingResult.hasFieldErrors()) {
+//            return appUtils.mapErrorToResponse(bindingResult);
+//        }
+//
+//
+//        OrderResDTO orderResDTO = orderService.createOrder(orderReqDTO);
+//        return new ResponseEntity<>(orderResDTO, HttpStatus.CREATED);
+//    }
+
+
+    @PostMapping("/order-details")
+    public ResponseEntity<?> createOrderDetail(@RequestBody OrderReqDTO orderReqDTO, BindingResult bindingResult) {
+
 
         new OrderReqDTO().validate(orderReqDTO, bindingResult);
         if (bindingResult.hasFieldErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
         }
-
-
-        OrderResDTO orderResDTO = orderService.createOrder(orderReqDTO);
-        return new ResponseEntity<>(orderResDTO, HttpStatus.CREATED);
-    }
-
-    // thêm order vào order củ
-    @PostMapping("/{id}/order-details")
-    public ResponseEntity<?> createOrderDetail(@RequestBody OrderReqDTO orderReqDTO, @PathVariable("id") String idstr, BindingResult bindingResult) {
-        if (!validateUtils.isNumberValid(idstr)) {
-            throw new DataInputException("Mã đặt hàng không hợp lệ");
+        Long tableId = Long.valueOf(orderReqDTO.getTableOrder().getId());
+        TableOrder tableOrder = tableOrderService.findById(tableId).get();
+        if (tableOrder.getStatus() == EStatus.ROLE_STOCKING) {
+             OrderResDTO orderResDTO = orderService.createOrder(orderReqDTO);
+             return new ResponseEntity<>(orderResDTO ,HttpStatus.OK);
+        } else {
+            OrderResDTO orderResDTO = orderService.updateOrderDetail(orderReqDTO, tableOrder);
+            return new ResponseEntity<>(orderResDTO ,HttpStatus.OK);
         }
-        new OrderReqDTO().validate(orderReqDTO, bindingResult);
-        if (bindingResult.hasFieldErrors()) {
-            return appUtils.mapErrorToResponse(bindingResult);
-        }
-        Long id = Long.valueOf(idstr);
 
-        OrderResDTO orderResDTO = orderService.updateOrderDetail(orderReqDTO, id);
-        return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
+
+
+
     }
 
     // xóa order
