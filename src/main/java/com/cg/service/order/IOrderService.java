@@ -22,4 +22,6 @@ public interface IOrderService extends IGeneralService<Order,Long> {
     OrderResDTO deleteByIdOrder(Long orderId,Long orderDetailId);
 
 
+
+
 }

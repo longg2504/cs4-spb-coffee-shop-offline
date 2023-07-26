@@ -138,4 +138,11 @@ public class ProductAPI {
 
          return new ResponseEntity<>(productDTO,HttpStatus.OK);
     }
+
+    @GetMapping("/searchName/{keySearch}")
+    public ResponseEntity<List<ProductDTO>> getProductByName(@PathVariable("keySearch") String keySearch){
+        keySearch = '%' + keySearch + '%';
+        List<ProductDTO> productDTO = productService.findProductByName(keySearch);
+        return new ResponseEntity<>(productDTO,HttpStatus.OK);
+    }
 }

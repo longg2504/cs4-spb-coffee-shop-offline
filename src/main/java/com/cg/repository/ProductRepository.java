@@ -41,4 +41,19 @@ List<ProductDTO> findAllProductDTO();
         "From Product AS pr " +
         "WHERE pr.category.id = :categoryId")
 List<ProductDTO> findAllByCategoryLike(Long categoryId);
+
+@Query("SELECT NEW com.cg.model.dto.product.ProductDTO (" +
+        "pro.id, " +
+        "pro.title, " +
+        "pro.price, " +
+        "pro.unit, " +
+        "pro.category, " +
+        "pro.productAvatar" +
+        ")" +
+        "FROM Product as pro " +
+        "WHERE pro.title like :keySearch"
+)
+List<ProductDTO> findProductByName(String keySearch);
 }
+
+

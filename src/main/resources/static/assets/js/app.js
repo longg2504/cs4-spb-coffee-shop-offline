@@ -63,6 +63,11 @@ class Category {
     }
 }
 
+class OrderDetail {
+    constructor() {
+    }
+}
+
 
 // $(function() {
 //     $(".num-space").number(true, 0, ',', ' ');

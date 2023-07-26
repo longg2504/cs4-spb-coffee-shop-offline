@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -33,7 +33,7 @@
             </div>
             <div class="container-content" id="container-content-left">
                 <div id="div-search-product" class="search d-flex justify-content-end hide">
-                    <input type="text">
+                    <input type="text" id="searchProduct">
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -114,11 +114,16 @@
 
     </div>
 </div>
+
+<th:block th:replace="shop/modalProductDetail"/>
 </body>
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/bootstrap/v.5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/app.js"></script>
+
+
+
 
 <script>
     const page = {
@@ -127,7 +132,8 @@
             getALLTabOrders: "http://localhost:9000/api/tableOrders",
             getProductById: 'http://localhost:9000/api/products',
             getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table',
-            getOrderByTableId : 'http://localhost:9000/api/orders/table'
+            getOrderByTableId : 'http://localhost:9000/api/orders/table',
+            getProductByName:"http://localhost:9000/api/products/searchName"
         },
         elements: {},
         loadData: {},
@@ -154,12 +160,22 @@
     page.elements.wrapperFooter = $('.wrapper-footer');
     page.elements.tableCurrent = $('#table-current');
     page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
-
-
-
     page.elements.tableCurrent = $('#table-current');
-
     page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
+
+    page.dialogs.elements.modalProductDetail = $('#modalProductDetail');
+    page.dialogs.elements.frmProductDetail = $('#frmProductDetail');
+    page.dialogs.elements.imgPro = $('#imgPro');
+    page.dialogs.elements.titlePro = $('#titlePro');
+    page.dialogs.elements.pricePro = $('#pricePro');
+    page.dialogs.elements.quantityPro = $('#quantityPro');
+    page.dialogs.elements.unitPro = $('#unitPro');
+    page.dialogs.elements.notePro = $('#notePro');
+    page.dialogs.elements.btnOrderProduct = $('#btnOrderProduct');
+
+    page.elements.searchProduct = $('#searchProduct');
+
+
 
 
     let product = new Product();
@@ -207,73 +223,6 @@
   `
     }
 
-    page.commands.renderSearch = () => {
-        return `
-          <div id="div-search-product" class="search d-flex justify-content-end hide">
-                    <input type="text">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown button
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-outline-secondary"><i class="fas fa-search"></i>search</button>
-                </div>
-    `
-
-    }
-
-
-    page.commands.getAllTable = () => {
-        $.ajax({
-            type: 'GET',
-            url: page.url.getALLTabOrders
-        })
-            .done((data) => {
-                    page.elements.tablePannel.empty();
-                    data.forEach(item => {
-                        tableOrder = item;
-                        let str = page.commands.renderTable(tableOrder)
-                        page.elements.tablePannel.prepend(str)
-
-                    })
-
-            })
-    }
-
-    page.commands.handleAddEventShowProductDetail = () => {
-        alert("abc");
-    }
-
-    page.commands.getAllProduct = () => {
-        page.elements.menuPannel.empty();
-        $.ajax({
-            type: 'GET',
-            url: page.url.getAllProducts
-        })
-            .done((data) => {
-                data.forEach(item => {
-                    product = item;
-                    const str = page.commands.renderProduct(product)
-                    page.elements.menuPannel.prepend(str);
-                })
-            })
-    }
-
-    page.commands.showHideSearchDiv = () => {
-        if (page.elements.menuPannel.hasClass('active','show')) {
-            page.elements.divSearchProduct.removeClass('hide');
-        }
-        else {
-            page.elements.divSearchProduct.addClass('hide');
-        }
-    }
-
     page.commands.renderOrderDetail = (obj) => {
         return `
         <div class="item d-flex">
@@ -305,6 +254,46 @@
             </div>
         </div>
         `;
+    }
+
+    page.commands.getAllTable = () => {
+        $.ajax({
+            type: 'GET',
+            url: page.url.getALLTabOrders
+        })
+            .done((data) => {
+                    page.elements.tablePannel.empty();
+                    data.forEach(item => {
+                        tableOrder = item;
+                        let str = page.commands.renderTable(tableOrder)
+                        page.elements.tablePannel.prepend(str)
+
+                    })
+
+            })
+    }
+
+    page.commands.getAllProduct = () => {
+        page.elements.menuPannel.empty();
+        $.ajax({
+            type: 'GET',
+            url: page.url.getAllProducts
+        })
+            .done((data) => {
+                data.forEach(item => {
+                    product = item;
+                    const str = page.commands.renderProduct(product)
+                    page.elements.menuPannel.prepend(str);
+                })
+            })
+    }
+
+    page.commands.getProductById = (productId) => {
+        return $.ajax({
+            type: 'GET',
+            url: page.url.getProductById + '/' + productId
+        })
+
     }
 
     page.commands.getOrderDetailsByTableId = (tableId) => {
@@ -344,22 +333,68 @@
             })
     }
 
-    
-    page.commands.getProductById = (productId) => {
-        $.ajax({
-            type: 'GET',
-            url: page.url.getProductById + '/' + productId
-        })
-            .done((data) => {
-                console.log(data)
+    page.commands.getProductByName = () =>  {
+        let searchProduct = page.elements.searchProduct.val();
+        page.elements.menuPannel.empty();
+        if (searchProduct == "") {
+            $.ajax({
+                type: 'GET',
+                url: page.url.getAllProducts
             })
-            .fail((jqXHR) => {
-                console.log(jqXHR)
+                .done((data) => {
+                    console.log(data)
+                    data.forEach(item => {
+                        product = item;
+                        const str = page.commands.renderProduct(product)
+                        page.elements.menuPannel.prepend(str);
+                    })
+                })
+        }
+        else{
+            $.ajax({
+                type: 'GET',
+                url: page.url.getProductByName + "/" +searchProduct
             })
+                .done((data) => {
+                    console.log(data)
+                    data.forEach(item => {
+                        product = item;
+                        const str = page.commands.renderProduct(product)
+                        page.elements.menuPannel.prepend(str);
+                    })
+                })
+        }
+
+    }
+
+    page.commands.handleAddEventShowProductDetail = () => {
+        page.dialogs.elements.modalProductDetail.modal('show');
+    }
+
+    page.commands.doOrder = () => {
+        const image = page.dialogs.elements.imgPro.val();
+        const title = page.dialogs.elements.titlePro.val();
+        const price = page.dialogs.elements.pricePro.val();
+        const quantity = page.dialogs.elements.quantityPro.val();
+        const unit = page.dialogs.elements.unitPro.val();
+        const note = page.dialogs.elements.notePro.val();
+        const totalAmount = price * quantity;
+
+
+    }
+
+    page.commands.showHideSearchDiv = () => {
+        if (page.elements.menuPannel.hasClass('active','show')) {
+            page.elements.divSearchProduct.removeClass('hide');
+        }
+        else {
+            page.elements.divSearchProduct.addClass('hide');
+        }
     }
 
     page.loadData = () => {
         page.commands.getAllTable();
+
         page.commands.getAllProduct();
     }
 
@@ -380,11 +415,58 @@
 
         page.elements.menuPannel.on('click', '.container-product-item', function() {
             const productId = $(this).data('id');
-            page.commands.getProductById(productId);
-            page.commands.handleAddEventShowProductDetail();
+
+            page.commands.getProductById(productId).then((data) => {
+                $('#frmProductDetail').empty();
+                let str = `
+                <input type="hidden" value="${productId}">
+                <div class="col-6 mb-3 text-center">
+                    <div class="col-12">
+                        <span style="font-size: 24px">${data.title}</span>
+                        <div class="imageProductDetail">
+                            <img id="imgPro" style="height: 100%;width: 100%;" src="${data.avatar.fileUrl}" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 mb-5 mr-3" style="margin-left: 15px">
+                    <div class="col-12" style="margin-top:28px">
+                        <p id="titlePro"  style="font-size: 22px">${data.title}</p>
+                        <div class="price">
+                            <p>Giá : <span id="pricePro">${data.price}</span></p>
+                        </div>
+                        <div class="quantityProductDetail">
+                            <p>
+                                Số Lượng
+                                <span>
+                                    <input id="quantityPro" class="col-6" type="number" min="1" max="20" value="1">
+                                </span>
+                            </p>
+
+                        </div>
+                        <div class="unit">
+                            <p>Đơn Vị : <span id="unitPro">${data.unit}</span></p>
+                        </div>
+                        <div class="note">
+                            <label for="notePro">Ghi Chú <input id="notePro" type="text" ></label>
+                        </div>
+                    </div>
+                </div>
+               `;
+
+                $('#frmProductDetail').append(str);
+
+                page.commands.handleAddEventShowProductDetail();
+
+
+            });
+
 
         })
 
+
+        page.elements.searchProduct.on('change' , function () {
+            page.commands.getProductByName();
+        })
 
         page.elements.btnNavLink.on('click', () => {
             page.commands.showHideSearchDiv();

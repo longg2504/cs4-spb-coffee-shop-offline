@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -33,7 +33,7 @@
             </div>
             <div class="container-content" id="container-content-left">
                 <div id="div-search-product" class="search d-flex justify-content-end hide">
-                    <input type="text">
+                    <input type="text" id="searchProduct">
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -94,183 +94,6 @@
                         </div>
                         <div class="content-items hide">
 
-<<<<<<< HEAD
-                            </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="item d-flex">
-                                <div class="image">
-                                    <img src="https://res.cloudinary.com/cloudinarymen/image/upload/c_limit,w_180,h_180,q_100/White-Lotus-Restaurant/product/9c8a19d0-6755-4121-ab5e-b965c806d1c3.jpg"
-                                         alt="">
-                                </div>
-                                <div class="item-content">
-                                    <div class="title-close d-flex justify-content-between">
-                                        <span>Khoai Chien</span>
-                                        <button>
-                                            <span>X</span>
-                                        </button>
-                                    </div>
-                                    <div class="price-quantity d-flex justify-content-between">
-                                        <span>Gia : 300000</span>
-                                        <form action="">
-                                            <div class="quantity d-flex">
-                                                <button type="button"><i class="fas fa-minus"></i></button>
-                                                <span>quantity</span>
-                                                <button type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        </form>
-                                        <span>300000</span>
-                                    </div>
-                                    <div class="note d-flex">
-                                        <span>khong co ghi chu</span>
-                                    </div>
-                                </div>
-                            </div>
-=======
->>>>>>> feature/update-validate-order
                         </div>
                     </div>
 
@@ -291,11 +114,16 @@
 
     </div>
 </div>
+
+<th:block th:replace="shop/modalProductDetail"/>
 </body>
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/bootstrap/v.5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/app.js"></script>
+
+
+
 
 <script>
     const page = {
@@ -303,14 +131,9 @@
             getAllProducts: "http://localhost:9000/api/products",
             getALLTabOrders: "http://localhost:9000/api/tableOrders",
             getProductById: 'http://localhost:9000/api/products',
-<<<<<<< HEAD
-            getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table'
-=======
             getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table',
-            getOrderByTableId : 'http://localhost:9000/api/orders/table'
-
->>>>>>> feature/update-validate-order
-
+            getOrderByTableId : 'http://localhost:9000/api/orders/table',
+            getProductByName:"http://localhost:9000/api/products/searchName"
         },
         elements: {},
         loadData: {},
@@ -337,9 +160,12 @@
     page.elements.wrapperFooter = $('.wrapper-footer');
     page.elements.tableCurrent = $('#table-current');
     page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
-
-
+    page.elements.tableCurrent = $('#table-current');
     page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
+
+    page.dialogs.elements.modalProductDetail = $('#modalProductDetail');
+
+    page.elements.searchProduct = $('#searchProduct');
 
 
     let product = new Product();
@@ -350,13 +176,8 @@
 
         return `
             <div class="container-tab-item col-3" data-id="${tableOrder.id}">
-<<<<<<< HEAD
-              <div class="tab-header  text-center">
-                <button style="border: none; background-color: none;">
-=======
               <div  class="tab-header text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
                 <button style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
->>>>>>> feature/update-validate-order
                   <i class="fas fa-coffee"></i>
                 </button>
               </div>
@@ -392,73 +213,6 @@
   `
     }
 
-    page.commands.renderSearch = () => {
-        return `
-          <div id="div-search-product" class="search d-flex justify-content-end hide">
-                    <input type="text">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown button
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-outline-secondary"><i class="fas fa-search"></i>search</button>
-                </div>
-    `
-
-    }
-
-
-    page.commands.getAllTable = () => {
-        $.ajax({
-            type: 'GET',
-            url: page.url.getALLTabOrders
-        })
-            .done((data) => {
-                    page.elements.tablePannel.empty();
-                    data.forEach(item => {
-                        tableOrder = item;
-                        let str = page.commands.renderTable(tableOrder)
-                        page.elements.tablePannel.prepend(str)
-
-                    })
-
-            })
-    }
-
-    page.commands.handleAddEventShowProductDetail = () => {
-        alert("abc");
-    }
-
-    page.commands.getAllProduct = () => {
-        page.elements.menuPannel.empty();
-        $.ajax({
-            type: 'GET',
-            url: page.url.getAllProducts
-        })
-            .done((data) => {
-                data.forEach(item => {
-                    product = item;
-                    const str = page.commands.renderProduct(product)
-                    page.elements.menuPannel.prepend(str);
-                })
-            })
-    }
-
-    page.commands.showHideSearchDiv = () => {
-        if (page.elements.menuPannel.hasClass('active','show')) {
-            page.elements.divSearchProduct.removeClass('hide');
-        }
-        else {
-            page.elements.divSearchProduct.addClass('hide');
-        }
-    }
-
     page.commands.renderOrderDetail = (obj) => {
         return `
         <div class="item d-flex">
@@ -485,22 +239,53 @@
                     <span>${obj.amount}</span>
                 </div>
                 <div class="note d-flex">
-<<<<<<< HEAD
-                    <span>${obj.note}</span>
-=======
                     <span>Note: ${obj.note}</span>
->>>>>>> feature/update-validate-order
                 </div>
             </div>
         </div>
         `;
     }
 
+    page.commands.getAllTable = () => {
+        $.ajax({
+            type: 'GET',
+            url: page.url.getALLTabOrders
+        })
+            .done((data) => {
+                    page.elements.tablePannel.empty();
+                    data.forEach(item => {
+                        tableOrder = item;
+                        let str = page.commands.renderTable(tableOrder)
+                        page.elements.tablePannel.prepend(str)
 
-<<<<<<< HEAD
-=======
+                    })
 
->>>>>>> feature/update-validate-order
+            })
+    }
+
+    page.commands.getAllProduct = () => {
+        page.elements.menuPannel.empty();
+        $.ajax({
+            type: 'GET',
+            url: page.url.getAllProducts
+        })
+            .done((data) => {
+                data.forEach(item => {
+                    product = item;
+                    const str = page.commands.renderProduct(product)
+                    page.elements.menuPannel.prepend(str);
+                })
+            })
+    }
+
+    page.commands.getProductById = (productId) => {
+        return $.ajax({
+            type: 'GET',
+            url: page.url.getProductById + '/' + productId
+        })
+
+    }
+
     page.commands.getOrderDetailsByTableId = (tableId) => {
         $.ajax({
             type: 'GET',
@@ -508,23 +293,10 @@
         })
             .done((data) => {
                 console.log(data)
-<<<<<<< HEAD
-                if (data.length > 0) {
-                    page.elements.contentItems.empty();
-                    $.each(data, (index, item) => {
-                        const str = page.commands.renderOrderDetail(item);
-                        page.elements.contentItems.append(str);
-                    })
-
-=======
-
                 if (data && data.length > 0) {
                     page.elements.contentItems.empty();
 
                     let totalAmount = 0;
-
-
-
                     $.each(data, (index, item) => {
                         const str = page.commands.renderOrderDetail(item);
                         page.elements.contentItems.append(str);
@@ -534,61 +306,74 @@
                     $('#totalAmount').text(totalAmount + ' vnd')
 
 
->>>>>>> feature/update-validate-order
                     page.elements.boardWaiting.addClass('hide');
                     page.elements.contentItems.removeClass('hide');
                 }
                 else {
-<<<<<<< HEAD
-                    page.elements.contentItems.addClass('hide');
-                    page.elements.boardWaiting.removeClass('hide');
-=======
                     page.elements.boardWaiting.removeClass('hide');
                     page.elements.contentItems.addClass('hide');
 
                     $('#totalAmount').text('0 vnd')
->>>>>>> feature/update-validate-order
                 }
             })
             .fail((jqXHR) => {
                 console.log(jqXHR)
-<<<<<<< HEAD
-                page.elements.contentItems.addClass('hide');
-                page.elements.boardWaiting.removeClass('hide');
-            })
-    }
-    
-=======
                 page.elements.boardWaiting.removeClass('hide');
                 page.elements.contentItems.addClass('hide');
             })
     }
 
->>>>>>> feature/update-validate-order
-    
-    page.commands.getProductById = (productId) => {
-        $.ajax({
-            type: 'GET',
-            url: page.url.getProductById + '/' + productId
-        })
-            .done((data) => {
-                console.log(data)
+    page.commands.getProductByName = () =>  {
+        let searchProduct = page.elements.searchProduct.val();
+        page.elements.menuPannel.empty();
+        if (searchProduct == null) {
+            $.ajax({
+                type: 'GET',
+                url: page.url.getAllProducts + "/" +searchProduct
             })
-            .fail((jqXHR) => {
-                console.log(jqXHR)
+                .done((data) => {
+                    console.log(data)
+                    data.forEach(item => {
+                        product = item;
+                        const str = page.commands.renderProduct(product)
+                        page.elements.menuPannel.prepend(str);
+                    })
+                })
+        }
+        else{
+            $.ajax({
+                type: 'GET',
+                url: page.url.getProductByName + "/" +searchProduct
             })
+                .done((data) => {
+                    console.log(data)
+                    data.forEach(item => {
+                        product = item;
+                        const str = page.commands.renderProduct(product)
+                        page.elements.menuPannel.prepend(str);
+                    })
+                })
+        }
+
+    }
+
+    page.commands.handleAddEventShowProductDetail = () => {
+        page.dialogs.elements.modalProductDetail.modal('show');
+    }
+
+    page.commands.showHideSearchDiv = () => {
+        if (page.elements.menuPannel.hasClass('active','show')) {
+            page.elements.divSearchProduct.removeClass('hide');
+        }
+        else {
+            page.elements.divSearchProduct.addClass('hide');
+        }
     }
 
     page.loadData = () => {
         page.commands.getAllTable();
 
         page.commands.getAllProduct();
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> feature/update-validate-order
     }
 
     page.initializeControlEvent = () => {
@@ -601,23 +386,65 @@
 
         page.elements.tablePannel.on('click', '.container-tab-item', function() {
             const tableId = $(this).data('id');
-<<<<<<< HEAD
-=======
             page.elements.tableCurrent.find('span').text('Bàn ' + tableId);
->>>>>>> feature/update-validate-order
             page.commands.getOrderDetailsByTableId(tableId);
         })
 
 
         page.elements.menuPannel.on('click', '.container-product-item', function() {
             const productId = $(this).data('id');
-            page.commands.getProductById(productId);
-<<<<<<< HEAD
-=======
-            page.commands.handleAddEventShowProductDetail();
->>>>>>> feature/update-validate-order
+
+            page.commands.getProductById(productId).then((data) => {
+                $('#frmProductDetail').empty();
+                let str = `
+                <div class="col-6 mb-3 text-center">
+                    <div class="col-12">
+                        <span style="font-size: 24px">${data.title}</span>
+                        <div class="imageProductDetail">
+                            <img style="height: 100%;width: 100%;" src="${data.avatar.fileUrl}" alt="">
+                        </div>
+                        <p style="font-size: 24px">Tong <span>${totalAmount}</span></p>
+                    </div>
+                </div>
+                <div class="col-6 mb-5 mr-3" style="margin-left: 15px">
+                    <div class="col-12" style="margin-top:28px">
+                        <p   style="font-size: 22px">${data.title}</p>
+                        <div class="price">
+                            <p>Giá : <span>${data.price}</span></p>
+                        </div>
+                        <div class="quantityProductDetail">
+                            <p>
+                                Số Lượng
+                                <span>
+                                    <input id="quantity" class="col-6" type="number" min="1" max="20" value="1">
+                                </span>
+                            </p>
+
+                        </div>
+                        <div class="unit">
+                            <p>Đơn Vị : <span>${data.unit}</span></p>
+                        </div>
+                        <div class="note">
+                            <label for="note">Ghi Chu <input type="text" id="note"></label>
+                        </div>
+                    </div>
+                </div>
+               `;
+
+                $('#frmProductDetail').append(str);
+
+                page.commands.handleAddEventShowProductDetail();
+
+
+            });
+
+
         })
 
+
+        page.elements.searchProduct.on('change' , function () {
+            page.commands.getProductByName();
+        })
 
         page.elements.btnNavLink.on('click', () => {
             page.commands.showHideSearchDiv();
@@ -625,22 +452,10 @@
 
 
         page.elements.tablePannel.on('click', '.tab-content-item', () => {
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/update-validate-order
             page.elements.menuTab.trigger('click');
             page.commands.showHideSearchDiv();
         })
 
-<<<<<<< HEAD
-            // page.elements.boardWaiting.toggle('hide');
-            // page.elements.contentItems.toggle('hide');
-
-        })
-
-=======
->>>>>>> feature/update-validate-order
         page.elements.btnShowProductDetailModal.on('click' , () => {
             page.commands.handleAddEventShowProductDetail();
         })

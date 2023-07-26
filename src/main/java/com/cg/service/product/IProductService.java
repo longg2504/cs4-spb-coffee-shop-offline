@@ -18,4 +18,6 @@ public interface IProductService extends IGeneralService<Product,Long> {
     void deleteByIdTrue(Product product);
 
     List<ProductDTO> findAllByCategoryLike(Long category);
+
+    List<ProductDTO> findProductByName(String keySearch);
 }
