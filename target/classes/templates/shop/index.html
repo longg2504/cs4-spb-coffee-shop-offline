@@ -164,8 +164,18 @@
     page.elements.btnShowProductDetailModal = $('#btnShowProductDetailModal');
 
     page.dialogs.elements.modalProductDetail = $('#modalProductDetail');
+    page.dialogs.elements.frmProductDetail = $('#frmProductDetail');
+    page.dialogs.elements.imgPro = $('#imgPro');
+    page.dialogs.elements.titlePro = $('#titlePro');
+    page.dialogs.elements.pricePro = $('#pricePro');
+    page.dialogs.elements.quantityPro = $('#quantityPro');
+    page.dialogs.elements.unitPro = $('#unitPro');
+    page.dialogs.elements.notePro = $('#notePro');
+    page.dialogs.elements.btnOrderProduct = $('#btnOrderProduct');
 
     page.elements.searchProduct = $('#searchProduct');
+
+
 
 
     let product = new Product();
@@ -326,10 +336,10 @@
     page.commands.getProductByName = () =>  {
         let searchProduct = page.elements.searchProduct.val();
         page.elements.menuPannel.empty();
-        if (searchProduct == null) {
+        if (searchProduct == "") {
             $.ajax({
                 type: 'GET',
-                url: page.url.getAllProducts + "/" +searchProduct
+                url: page.url.getAllProducts
             })
                 .done((data) => {
                     console.log(data)
@@ -359,6 +369,18 @@
 
     page.commands.handleAddEventShowProductDetail = () => {
         page.dialogs.elements.modalProductDetail.modal('show');
+    }
+
+    page.commands.doOrder = () => {
+        const image = page.dialogs.elements.imgPro.val();
+        const title = page.dialogs.elements.titlePro.val();
+        const price = page.dialogs.elements.pricePro.val();
+        const quantity = page.dialogs.elements.quantityPro.val();
+        const unit = page.dialogs.elements.unitPro.val();
+        const note = page.dialogs.elements.notePro.val();
+        const totalAmount = price * quantity;
+
+
     }
 
     page.commands.showHideSearchDiv = () => {
@@ -397,35 +419,35 @@
             page.commands.getProductById(productId).then((data) => {
                 $('#frmProductDetail').empty();
                 let str = `
+                <input type="hidden" value="${productId}">
                 <div class="col-6 mb-3 text-center">
                     <div class="col-12">
                         <span style="font-size: 24px">${data.title}</span>
                         <div class="imageProductDetail">
-                            <img style="height: 100%;width: 100%;" src="${data.avatar.fileUrl}" alt="">
+                            <img id="imgPro" style="height: 100%;width: 100%;" src="${data.avatar.fileUrl}" alt="">
                         </div>
-                        <p style="font-size: 24px">Tong <span>${totalAmount}</span></p>
                     </div>
                 </div>
                 <div class="col-6 mb-5 mr-3" style="margin-left: 15px">
                     <div class="col-12" style="margin-top:28px">
-                        <p   style="font-size: 22px">${data.title}</p>
+                        <p id="titlePro"  style="font-size: 22px">${data.title}</p>
                         <div class="price">
-                            <p>Giá : <span>${data.price}</span></p>
+                            <p>Giá : <span id="pricePro">${data.price}</span></p>
                         </div>
                         <div class="quantityProductDetail">
                             <p>
                                 Số Lượng
                                 <span>
-                                    <input id="quantity" class="col-6" type="number" min="1" max="20" value="1">
+                                    <input id="quantityPro" class="col-6" type="number" min="1" max="20" value="1">
                                 </span>
                             </p>
 
                         </div>
                         <div class="unit">
-                            <p>Đơn Vị : <span>${data.unit}</span></p>
+                            <p>Đơn Vị : <span id="unitPro">${data.unit}</span></p>
                         </div>
                         <div class="note">
-                            <label for="note">Ghi Chu <input type="text" id="note"></label>
+                            <label for="notePro">Ghi Chú <input id="notePro" type="text" ></label>
                         </div>
                     </div>
                 </div>
