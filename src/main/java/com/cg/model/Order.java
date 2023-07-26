@@ -1,6 +1,7 @@
 package com.cg.model;
 
 
+import com.cg.model.dto.order.OrderDTO;
 import com.cg.model.dto.order.OrderResDTO;
 import com.cg.model.dto.orderDetail.OrderDetailDTO;
 import com.cg.model.dto.staff.StaffDTO;
@@ -39,7 +40,6 @@ public class Order extends BaseEntity {
     private BigDecimal totalAmount;
 
     @OneToMany(mappedBy = "order")
-    @JsonIgnore
     private List<OrderDetail> orderDetails;
 
     private Boolean paid;
@@ -58,6 +58,14 @@ public class Order extends BaseEntity {
                 .setTableOrder(tableOrder.toTableOrderDTO())
                 .setOrderDetails(orderDetailDTOS)
                 .setPaid(paid)
+                ;
+    }
+
+
+    public OrderDTO toOrderDTO() {
+        return new OrderDTO()
+                .setId(id)
+                .setTotalAmount(totalAmount)
                 ;
     }
 }

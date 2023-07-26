@@ -1,15 +1,14 @@
 package com.cg.model;
 
-import com.cg.model.enums.EStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.cg.model.dto.bill.BillResDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,16 +16,28 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "bills")
-public class Bill {
+@Accessors(chain = true)
+public class Bill extends BaseEntity{
 
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-     @Column(name = "total_price")
-    private BigDecimal totalPrice;
+     @Column(name = "total_amount")
+    private BigDecimal totalAmount;
 
      @OneToOne
     @JoinColumn(name = "order_id",referencedColumnName = "id",nullable = false)
     private Order order;
+
+
+
+    public BillResDTO toBillResDTO() {
+        return new BillResDTO()
+                .setId(null)
+                .setTotalAmount(totalAmount)
+                .setPaid(getOrder().getPaid())
+                .setOrderId(getOrder().getId())
+                ;
+    }
 }

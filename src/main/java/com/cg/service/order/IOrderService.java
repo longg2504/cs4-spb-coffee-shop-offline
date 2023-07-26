@@ -2,6 +2,7 @@ package com.cg.service.order;
 
 import com.cg.model.Order;
 import com.cg.model.OrderDetail;
+import com.cg.model.dto.order.OrderDTO;
 import com.cg.model.dto.order.OrderReqDTO;
 import com.cg.model.dto.order.OrderResDTO;
 import com.cg.service.IGeneralService;
@@ -20,6 +21,7 @@ public interface IOrderService extends IGeneralService<Order,Long> {
 
 
     OrderResDTO deleteByIdOrder(Long orderId,Long orderDetailId);
+
 
 
 }

@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements ICategoryService{
 
         return categoryCreResDTO;
     }
-//
+
     @Override
     public CategoryUpResDTO updateCategory(Long categoryId , CategoryUpReqDTO categoryUpReqDTO) {
          Category category = categoryUpReqDTO.toCategory(categoryId);
