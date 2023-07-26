@@ -181,6 +181,7 @@
     let product = new Product();
     let tableOrder = new TableOrder();
     let category = new Category();
+    let currentTable = 0;
 
     page.commands.renderTable = (tableOrder) => {
 
@@ -407,9 +408,9 @@
 
 
         page.elements.tablePannel.on('click', '.container-tab-item', function() {
-            const tableId = $(this).data('id');
-            page.elements.tableCurrent.find('span').text('Bàn ' + tableId);
-            page.commands.getOrderDetailsByTableId(tableId);
+            currentTable = $(this).data('id');
+            page.elements.tableCurrent.find('span').text('Bàn ' + currentTable);
+            page.commands.getOrderDetailsByTableId(currentTable);
         })
 
 

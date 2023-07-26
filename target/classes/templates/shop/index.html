@@ -181,6 +181,7 @@
     let product = new Product();
     let tableOrder = new TableOrder();
     let category = new Category();
+    let currentTable = 0;
 
     page.commands.renderTable = (tableOrder) => {
 
@@ -210,7 +211,7 @@
                       <div class="product-title" >
                           ${product.title}
                       </div>
-                      <div class="product-title-bottom">
+                      <div class="product-title-bottom" style="font-size: 16px">
                       <span>
                           ${product.price}
                       </span>
@@ -230,7 +231,7 @@
                 <img src="${obj.avatar.fileUrl}"
                      alt="">
             </div>
-            <div class="item-content">
+            <div class="item-content" style="margin-left: 10px;">
                 <div class="title-close d-flex justify-content-between">
                     <span>${obj.title}</span>
                     <button>
@@ -407,9 +408,9 @@
 
 
         page.elements.tablePannel.on('click', '.container-tab-item', function() {
-            const tableId = $(this).data('id');
-            page.elements.tableCurrent.find('span').text('Bàn ' + tableId);
-            page.commands.getOrderDetailsByTableId(tableId);
+            currentTable = $(this).data('id');
+            page.elements.tableCurrent.find('span').text('Bàn ' + currentTable);
+            page.commands.getOrderDetailsByTableId(currentTable);
         })
 
 

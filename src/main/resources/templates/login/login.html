@@ -74,10 +74,15 @@
             url: 'http://localhost:9000/api/auth/login',
             data: JSON.stringify(obj)
         })
-            .done(() => {
+            .done((data) => {
                 alert('Đăng nhập thành công');
+                if(data.roles[0].authority == "ADMIN"){
+                    location.href = "/dashboards";
+                }
+                else {
+                    location.href = "/shops";
+                }
 
-                location.href = "/shops";
             })
             .fail((jqXHR) => {
                 console.log(jqXHR);
