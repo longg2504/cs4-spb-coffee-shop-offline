@@ -3,6 +3,7 @@ package com.cg.api;
 import com.cg.exception.DataInputException;
 import com.cg.model.Order;
 import com.cg.model.OrderDetail;
+import com.cg.model.dto.order.OrderDTO;
 import com.cg.model.dto.order.OrderReqDTO;
 import com.cg.model.dto.order.OrderResDTO;
 import com.cg.model.dto.orderDetail.OrderDetailByTableResDTO;
@@ -91,7 +92,6 @@ public class OrderAPI {
         return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
     }
 
-
     // xóa order
     @DeleteMapping("/{orderId}/order-details/{orderDetailId}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long orderId, @PathVariable Long orderDetailId) {
@@ -110,4 +110,6 @@ public class OrderAPI {
         OrderResDTO orderResDTO = order.toOrderResDTO();
         return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
     }
+
+
 }
