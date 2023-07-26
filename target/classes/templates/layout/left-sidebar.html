@@ -1,0 +1,54 @@
+<th:block th:fragment="left-sidebar">
+  <div class="left-side-menu">
+    <div class="slimscroll-menu">
+      <!--- Sidemenu -->
+      <div id="sidebar-menu">
+        <ul class="metismenu" id="side-menu">
+          <li class="menu-title">Navigation</li>
+          <th:block th:if="${roleCode == 'ADMIN'}" >
+          <li>
+            <a href="#" class="waves-effect">
+              <div class="d-flex" style="justify-content: space-between">
+                <span><i class="fa-solid fa-user-shield"></i> Dashboards </span>
+                <i class="fa-solid fa-bars"></i>
+              </div>
+            </a>
+            <ul class="nav-second-level" aria-expanded="false">
+              <li>
+                <a href="/dashboard/products">List Figure</a>
+              </li>
+              <li>
+                <a href="/dashboard/customers">List Customer</a>
+              </li>
+              <li>
+                <a href="/dashboard/revenue">Revenue</a>
+              </li>
+            </ul>
+          </li>
+          </th:block>
+          <th:block th:if="${roleCode == 'CUSTOMER'}" >
+          <li>
+            <a href="#" class="waves-effect">
+              <div class="d-flex" style="justify-content: space-between">
+                <span><i class="fa-solid fa-store"></i> Web Shop </i></span>
+                <i class="fa-solid fa-bars"></i>
+              </div>
+
+            </a>
+            <ul class="nav-second-level" aria-expanded="false">
+              <li>
+                <a href="/shop">Home page</a>
+              </li>
+
+            </ul>
+          </li>
+          </th:block>
+
+        </ul>
+      </div>
+      <!-- End Sidebar -->
+      <div class="clearfix"></div>
+    </div>
+    <!-- Sidebar -left -->
+  </div>
+</th:block>
