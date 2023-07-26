@@ -8,10 +8,9 @@ import java.util.List;
 
 public interface ICategoryService extends IGeneralService<Category,Long> {
     List<CategoryDTO> findCategoriesDTO();
-//
     CategoryCreResDTO createCategory(CategoryCreReqDTO categoryCreReqDTO);
-//
+
     CategoryUpResDTO updateCategory(Long categoryId, CategoryUpReqDTO categoryUpReqDTO);
-//
+
     void deleteByIdTrue(Category category);
 }

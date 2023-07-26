@@ -113,6 +113,11 @@ public class ProductServiceImpl implements IProductService{
         return productRepository.findAllByCategoryLike(categoryId);
     }
 
+    @Override
+    public List<ProductDTO> findProductByName(String keySearch) {
+        return productRepository.findProductByName(keySearch);
+    }
+
     private void uploadAndSaveProductImage(ProductCreReqDTO productCreReqDTO, ProductAvatar productAvatar) {
         try {
             Map uploadResult = uploadService.uploadImage(productCreReqDTO.getAvatar(), uploadUtils.buildImageUploadParams(productAvatar));

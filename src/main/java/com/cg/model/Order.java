@@ -57,6 +57,7 @@ public class Order extends BaseEntity {
                 .setStaff(staff.toStaffDTO())
                 .setTableOrder(tableOrder.toTableOrderDTO())
                 .setOrderDetails(orderDetailDTOS)
+                .setPaid(paid)
                 ;
     }
 }

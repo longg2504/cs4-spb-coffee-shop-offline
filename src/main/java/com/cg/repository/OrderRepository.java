@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
 
-    @Query("SELECT ord FROM Order AS ord WHERE ord.tableOrder.id = :tableId AND ord.paid = false ")
+    @Query("SELECT ord FROM Order AS ord WHERE ord.tableOrder.id = :tableId AND ord.paid = false")
     Optional<Order> findByTableId(@Param("tableId") Long tableId);
 
 }

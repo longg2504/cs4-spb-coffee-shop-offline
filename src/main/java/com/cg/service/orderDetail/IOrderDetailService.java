@@ -13,5 +13,7 @@ public interface IOrderDetailService extends IGeneralService<OrderDetail,Long> {
 
 
     OrderDetail findByOrderDetailByIdProductAndIdOrder(Long idProduct,Long IdOrder,String note);
+
+
 }
 
