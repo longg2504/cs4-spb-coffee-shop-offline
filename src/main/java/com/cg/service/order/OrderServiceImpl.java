@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
+
     @Override
     public List<Order> findAll() {
         return null;
@@ -49,7 +51,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public Order save(Order order) {
-        return null;
+        return orderRepository.save(order);
     }
 
     @Override
@@ -66,33 +68,28 @@ public class OrderServiceImpl implements IOrderService {
     public OrderResDTO createOrder(OrderReqDTO orderReqDTO) {
 
         TableOrder tableOrder = tableOrderRepository.findById(Long.valueOf(orderReqDTO.getTableOrder().getId())).get();
-        if (tableOrder.getStatus().equals(EStatus.ROLE_OUT_OF_STOCK)) {
-            throw new DataInputException("bàn đang hoạt động");
-        }
         Staff staff = staffRepository.findById(Long.valueOf(orderReqDTO.getStaff().getId())).get();
+//        Order order = null;
+//        if (orderReqDTO.getIdOrder() != null) {
+//            order = orderRepository.findById(orderReqDTO.getIdOrder()).get();
+//        }
+//        if (order == null) {
+//            order = new Order();
+//        }
+        Order order = new Order();
 
-
-        Order order = null;
-        if (orderReqDTO.getIdOrder() != null) {
-            order = orderRepository.findById(orderReqDTO.getIdOrder()).get();
-        }
-        if (order == null) {
-            order = new Order();
-        }
-        tableOrder.setStatus(EStatus.ROLE_OUT_OF_STOCK);
-        tableOrder = tableOrderRepository.save(tableOrder);
 
         order.setTableOrder(tableOrder);
         order.setStaff(staff);
         order.setTotalAmount(BigDecimal.ZERO);
         order.setPaid(false);
         order = orderRepository.save(order);
-
+        tableOrder.setStatus(EStatus.ROLE_OUT_OF_STOCK);
+        tableOrderRepository.save(tableOrder);
 
         String idProduct = orderReqDTO.getOrderDetail().getProduct().getId();
         Integer quantity = Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity());
         Product product = productRepository.findById(Long.valueOf(idProduct)).get();
-
 
         OrderDetail orderDetail = orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(product.getId(), order.getId(), orderReqDTO.getOrderDetail().getNote());
         if (orderDetail == null) {
@@ -124,59 +121,94 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public OrderResDTO updateOrderDetail(OrderReqDTO orderReqDTO, Long idOrder) {
-        TableOrder tableOrder = tableOrderRepository.findById(Long.valueOf(orderReqDTO.getTableOrder().getId())).get();
-        if (tableOrder == null) {
-            throw new DataInputException("Bàn ko tồn tại");
-        }
-        Staff staff = staffRepository.findById(Long.valueOf(orderReqDTO.getStaff().getId())).get();
-        if (staff == null) {
-            throw new DataInputException("Nhân viên ko tồn tại");
-        }
-        Order order = orderRepository.findById(idOrder).get();
+    public OrderResDTO updateOrderDetail(OrderReqDTO orderReqDTO, TableOrder tableOrder ) {
+
+
+        Order order = orderRepository.findByTableId(Long.valueOf(orderReqDTO.getTableOrder().getId())).get();
         Product product = productRepository.findById(Long.valueOf(orderReqDTO.getOrderDetail().getProduct().getId())).get();
-        OrderDetail orderDetail = orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(product.getId(), idOrder, orderReqDTO.getOrderDetail().getNote());
-        if (orderDetail != null) {
-            orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
-            orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
-            orderDetail.setPrice(product.getPrice());
-            orderDetail.setOrder(order);
-            orderDetail.setProduct(product);
+//        OrderDetail orderDetail = orderDetailRepository.findByOrderId(order.getId());
+        OrderDetail orderDetail = new OrderDetail();
+        List<OrderDetail> orderDetails = orderDetailRepository.findListOrderDetailByOrderId(order.getId());
 
-            BigDecimal amountNew = new BigDecimal(orderReqDTO.getOrderDetail().getQuantity()).multiply(product.getPrice());
+            for (OrderDetail item : orderDetails) {
 
-            BigDecimal amount = orderDetail.getAmount();
-
-            if (amount.compareTo(amountNew) <= 0 ) {
-
-                order.setTotalAmount(order.getTotalAmount().add(amountNew.subtract(amount)));
-            }else {
-                order.setTotalAmount(order.getTotalAmount().subtract(amount.subtract(amountNew)));
+                if(item.getProduct().getId().equals(Long.parseLong(orderReqDTO.getOrderDetail().getProduct().getId())) && item.getNote().equals(orderReqDTO.getOrderDetail().getNote())){
+                    item.setQuantity(item.getQuantity() + Integer.parseInt(orderReqDTO.getOrderDetail().getQuantity()));
+                    BigDecimal amountNew = item.getPrice().multiply(BigDecimal.valueOf(Integer.parseInt(orderReqDTO.getOrderDetail().getQuantity())));
+                    BigDecimal amount = new BigDecimal(item.getQuantity()).multiply(item.getPrice());
+                    item.setAmount(amount);
+                    orderDetailRepository.save(item);
+                    order.setTotalAmount(order.getTotalAmount().add(amountNew));
+                    orderRepository.save(order);
+                    OrderResDTO orderResDTO = order.toOrderResDTO();
+                    return orderResDTO;
+                }
             }
-            orderDetail.setAmount(amountNew);
+                orderDetail.setProduct(product);
+                orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
+                orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
+                orderDetail.setPrice(product.getPrice());
+                orderDetail.setOrder(order);
 
-            orderDetailRepository.save(orderDetail);
+                BigDecimal amount = new BigDecimal(orderReqDTO.getOrderDetail().getQuantity()).multiply(product.getPrice());
+                orderDetail.setAmount(amount);
+                orderDetailRepository.save(orderDetail);
+
+                order.setTotalAmount(order.getTotalAmount().add(amount));
+                    orderRepository.save(order);
 
 
 
-            order = orderRepository.save(order);
 
-        } else {
-            orderDetail = new OrderDetail();
-            orderDetail.setProduct(product);
-            orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
-            orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
-            orderDetail.setPrice(product.getPrice());
-            orderDetail.setOrder(order);
-
-            BigDecimal amount = new BigDecimal(orderReqDTO.getOrderDetail().getQuantity()).multiply(product.getPrice());
-            orderDetail.setAmount(amount);
-
-            orderDetailRepository.save(orderDetail);
-
-            order.setTotalAmount(order.getTotalAmount().add(amount));
-            order = orderRepository.save(order);
-        }
+//        if (orderDetails.isEmpty()) {
+//            orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
+//            orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
+//            orderDetail.setPrice(product.getPrice());
+//            orderDetail.setOrder(order);
+//            orderDetail.setProduct(product);
+//
+//            BigDecimal amountNew = new BigDecimal(orderReqDTO.getOrderDetail().getQuantity()).multiply(product.getPrice());
+//
+//            BigDecimal amount = orderDetail.getAmount();
+//
+//            if (amount.compareTo(amountNew) <= 0 ) {
+//
+//                order.setTotalAmount(order.getTotalAmount().add(amountNew.subtract(amount)));
+//            }else {
+//                order.setTotalAmount(order.getTotalAmount().subtract(amount.subtract(amountNew)));
+//            }
+//            orderDetail.setAmount(amountNew);
+//
+//            orderDetailRepository.save(orderDetail);
+//
+//
+//
+//            order = orderRepository.save(order);
+//
+//        } else {
+//            for (OrderDetail item : orderDetails) {
+//                if(item.getProduct().getId() == Long.parseLong(orderReqDTO.getOrderDetail().getProduct().getId()) && item.getNote() == orderReqDTO.getOrderDetail().getNote()){
+//                    item.setQuantity(item.getQuantity() + Integer.parseInt(orderReqDTO.getOrderDetail().getQuantity()));
+//                    BigDecimal amount = new BigDecimal(item.getQuantity()).multiply(item.getPrice());
+//                    item.setAmount(amount);
+//                    orderDetailRepository.save(item);
+//                }
+//
+//            }
+//            orderDetail.setProduct(product);
+//            orderDetail.setQuantity(Integer.valueOf(orderReqDTO.getOrderDetail().getQuantity()));
+//            orderDetail.setNote(orderReqDTO.getOrderDetail().getNote());
+//            orderDetail.setPrice(product.getPrice());
+//            orderDetail.setOrder(order);
+//
+//            BigDecimal amount = new BigDecimal(orderReqDTO.getOrderDetail().getQuantity()).multiply(product.getPrice());
+//            orderDetail.setAmount(amount);
+//
+//            orderDetailRepository.save(orderDetail);
+//
+//            order.setTotalAmount(order.getTotalAmount().add(amount));
+//            order = orderRepository.save(order);
+//        }
 
 
         OrderResDTO orderResDTO = order.toOrderResDTO();

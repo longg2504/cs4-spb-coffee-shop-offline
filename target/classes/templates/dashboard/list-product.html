@@ -59,7 +59,6 @@
                             <th scope="col">Title</th>
                             <th scope="col">Image</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Quantity</th>
                             <th scope="col">Unit</th>
                             <th scope="col">Description</th>
                             <th scope="col">Category</th>
@@ -91,21 +90,15 @@
 <th:block th:replace="/layout/script :: script"></th:block>
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/jquery/jquery.validate.js"></script>
-<script src="/assets/bootstrap/v5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/bootstrap/v.5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="/assets/js/magnific-popup-1.1.0.js"></script>
 
-<script src="/assets/js/appBase.js"></script>
 
 <script>
     const page = {
         url: {
-            getAllProduct: AppBase.API_PRODUCT,
-            getAllCategories: AppBase.API_CATEGORY,
 
-            doCreate: AppBase.API_CREATE_PRODUCT,
-            doUpdate: AppBase.API_UPDATE_PRODUCT,
-            doDelete: AppBase.API_DELETE_PRODUCT
         },
         elements: {},
         loadData: {},

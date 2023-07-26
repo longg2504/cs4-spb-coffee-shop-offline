@@ -5,7 +5,6 @@ import com.cg.model.dto.orderDetail.OrderDetailByTableResDTO;
 import com.cg.service.IGeneralService;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IOrderDetailService extends IGeneralService<OrderDetail,Long> {
 
@@ -14,6 +13,8 @@ public interface IOrderDetailService extends IGeneralService<OrderDetail,Long> {
 
     OrderDetail findByOrderDetailByIdProductAndIdOrder(Long idProduct,Long IdOrder,String note);
 
+    OrderDetail findByOrderId(Long orderId);
 
+     List<OrderDetail> findListOrderDetailByOrderId(Long orderId);
 }
 
