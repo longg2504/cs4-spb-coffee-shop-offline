@@ -33,7 +33,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
     @Query("SELECT odt FROM OrderDetail AS odt WHERE odt.order.id = :orderId")
     List<OrderDetail> findListOrderDetailByOrderId(@Param("orderId") Long orderId);
 
-         @Query("SELECT odt FROM OrderDetail AS odt WHERE odt.order.id = :orderId")
+    @Query("SELECT odt FROM OrderDetail AS odt WHERE odt.order.id = :orderId")
     OrderDetail findByOrderId(@Param("orderId") Long orderId);
     @Query("SELECT odt FROM OrderDetail as odt WHERE odt.product.id = :idProduct AND odt.order.id = :idOrder and odt.note LIKE :note" )
     OrderDetail findByOrderDetailByIdProductAndIdOrder(@Param("idProduct") Long idProduct,@Param("idOrder") Long idOrder, @Param("note") String note);
