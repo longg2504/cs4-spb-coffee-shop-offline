@@ -55,7 +55,7 @@ public class CategoryAPI {
     }
 
     @PatchMapping("/edit/{categoryId}")
-    public ResponseEntity<?> updateCategory(@PathVariable("categoryId") String categoryIdStr, @RequestBody CategoryUpReqDTO categoryUpReqDTO,BindingResult bindingResult){
+    public ResponseEntity<?> updateCategory(@PathVariable("categoryId") String categoryIdStr, @RequestBody CategoryUpReqDTO categoryUpReqDTO, BindingResult bindingResult){
         if (!validateUtils.isNumberValid(categoryIdStr)) {
             Map<String, String> data = new HashMap<>();
             data.put("message", "Mã danh mục không hợp lệ");

@@ -6,7 +6,6 @@ import com.cg.model.Order;
 import com.cg.model.TableOrder;
 import com.cg.model.dto.bill.BillDTO;
 import com.cg.model.dto.bill.BillResDTO;
-import com.cg.model.dto.order.OrderDTO;
 import com.cg.model.enums.EStatus;
 import com.cg.repository.BillRepository;
 import com.cg.repository.OrderRepository;
@@ -14,7 +13,6 @@ import com.cg.repository.TableOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 

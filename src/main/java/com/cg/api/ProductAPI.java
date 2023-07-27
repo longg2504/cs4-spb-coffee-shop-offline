@@ -3,8 +3,6 @@ package com.cg.api;
 import com.cg.exception.DataInputException;
 import com.cg.model.Category;
 import com.cg.model.Product;
-import com.cg.model.dto.category.CategoryUpReqDTO;
-import com.cg.model.dto.category.CategoryUpResDTO;
 import com.cg.model.dto.product.*;
 import com.cg.service.category.ICategoryService;
 import com.cg.service.product.IProductService;
@@ -75,7 +73,7 @@ public class ProductAPI {
     }
 
     @PatchMapping("edit/{productId}")
-    public ResponseEntity<?> updateProduct(@PathVariable("productId") String productIdStr, @ModelAttribute ProductUpReqDTO productUpReqDTO,BindingResult bindingResult) {
+    public ResponseEntity<?> updateProduct(@PathVariable("productId") String productIdStr, @ModelAttribute ProductUpReqDTO productUpReqDTO, BindingResult bindingResult) {
         if (!validateUtils.isNumberValid(productIdStr)) {
             Map<String, String> data = new HashMap<>();
             data.put("message", "Mã Sản phẩm không hợp lệ");

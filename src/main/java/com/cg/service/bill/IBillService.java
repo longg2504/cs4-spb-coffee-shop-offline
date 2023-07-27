@@ -3,7 +3,6 @@ package com.cg.service.bill;
 import com.cg.model.Bill;
 import com.cg.model.dto.bill.BillDTO;
 import com.cg.model.dto.bill.BillResDTO;
-import com.cg.model.dto.order.OrderDTO;
 import com.cg.service.IGeneralService;
 
 import java.util.List;

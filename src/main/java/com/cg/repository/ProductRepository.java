@@ -1,6 +1,5 @@
 package com.cg.repository;
 
-import com.cg.model.Category;
 import com.cg.model.Product;
 
 import com.cg.model.dto.product.ProductDTO;
@@ -10,8 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
-import static org.hibernate.loader.Loader.SELECT;
 
 
 @Repository

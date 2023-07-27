@@ -1,6 +1,5 @@
 package com.cg.model.dto.staff;
 
-import com.cg.model.User;
 import com.cg.model.dto.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

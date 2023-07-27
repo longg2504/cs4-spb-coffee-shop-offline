@@ -1,7 +1,6 @@
 package com.cg.api;
 
 import com.cg.exception.DataInputException;
-import com.cg.model.TableOrder;
 import com.cg.model.dto.tableOrder.TableOrderDTO;
 import com.cg.model.dto.tableOrder.TableOrderReqDTO;
 import com.cg.model.dto.tableOrder.TableOrderResDTO;

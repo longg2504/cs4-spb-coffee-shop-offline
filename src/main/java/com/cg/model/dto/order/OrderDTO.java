@@ -1,7 +1,4 @@
 package com.cg.model.dto.order;
-import com.cg.model.OrderDetail;
-import com.cg.model.Staff;
-import com.cg.model.TableOrder;
 import com.cg.model.dto.orderDetail.OrderDetailDTO;
 import com.cg.model.dto.staff.StaffDTO;
 import com.cg.model.dto.tableOrder.TableOrderDTO;
@@ -12,7 +9,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -26,7 +26,7 @@ public class ProductDTO {
     private CategoryDTO category;
     private ProductAvatarResDTO avatar;
 
-    public ProductDTO(Long id, String title, BigDecimal price,String unit, Category category, ProductAvatar avatar){
+    public ProductDTO(Long id, String title, BigDecimal price, String unit, Category category, ProductAvatar avatar){
         this.id= String.valueOf(id);
         this.title=title;
         this.price=price;

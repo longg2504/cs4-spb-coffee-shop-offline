@@ -1,21 +1,20 @@
-package com.cg.model.dto.bill;
+package com.cg.model.dto.order;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Accessors(chain = true)
-public class BillResDTO {
-    private Long id;
-    private BigDecimal totalAmount;
-    private Long orderId;
-    private Boolean paid;
-
+public class OrderCreResDTO {
+    private Long tableId;
+    private Integer quantity;
+    private Long productId;
+    private String note;
+    private String userName;
 }

@@ -31,7 +31,7 @@ public class ProductUpReqDTO implements Validator {
     private MultipartFile avatar;
     private ProductAvatar productAvatar;
 
-    public Product toProduct(Long id,Category category) {
+    public Product toProduct(Long id, Category category) {
         return new Product()
                 .setId(id)
                 .setTitle(title)

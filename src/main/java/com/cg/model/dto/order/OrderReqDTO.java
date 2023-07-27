@@ -1,9 +1,7 @@
 package com.cg.model.dto.order;
-import com.cg.model.Staff;
-import com.cg.model.dto.bill.BillDTO;
 import com.cg.model.dto.orderDetail.OrderDetailDTO;
-import com.cg.model.dto.staff.StaffDTO;
 import com.cg.model.dto.tableOrder.TableOrderDTO;
+import com.cg.model.dto.staff.StaffDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

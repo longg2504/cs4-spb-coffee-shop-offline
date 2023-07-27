@@ -1,9 +1,7 @@
 package com.cg.api;
 
 import com.cg.model.dto.bill.BillDTO;
-import com.cg.model.dto.bill.BillReqDTO;
 import com.cg.model.dto.bill.BillResDTO;
-import com.cg.model.dto.order.OrderDTO;
 import com.cg.service.bill.IBillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
