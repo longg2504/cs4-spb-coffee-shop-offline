@@ -85,24 +85,23 @@ public class OrderAPI {
     @PostMapping("/order-details")
     public ResponseEntity<?> createOrderDetail(@RequestBody OrderReqDTO orderReqDTO, BindingResult bindingResult) {
 
-
         new OrderReqDTO().validate(orderReqDTO, bindingResult);
+
         if (bindingResult.hasFieldErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
         }
+
         Long tableId = Long.valueOf(orderReqDTO.getTableOrder().getId());
         TableOrder tableOrder = tableOrderService.findById(tableId).get();
+
         if (tableOrder.getStatus() == EStatus.ROLE_STOCKING) {
              OrderResDTO orderResDTO = orderService.createOrder(orderReqDTO);
              return new ResponseEntity<>(orderResDTO ,HttpStatus.OK);
-        } else {
+        }
+        else {
             OrderResDTO orderResDTO = orderService.updateOrderDetail(orderReqDTO, tableOrder);
             return new ResponseEntity<>(orderResDTO ,HttpStatus.OK);
         }
-
-
-
-
     }
 
     // xóa order
