@@ -62,7 +62,6 @@
             <li class="dropdown notification-list">
                 <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown"
                    href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                    <img src="/assets/images/Avatar-trang-den.png" alt="user-image" class="rounded-circle">
                     <span class="pro-user-name ml-1" th:text="${username}">
                                 <i class="fa-solid fa-chevron-down"></i>
                             </span>
@@ -94,32 +93,18 @@
                 </a>
             </li>
         </ul>
-        <!-- LOGO -->
+         LOGO
         <div class="logo-box">
-            <th:block th:if="${roleCode == 'ADMIN'}" >
             <a href="/dashboard" class="logo text-center">
                         <span class="logo-lg">
-                            <img src="/assets/images/figure.png" alt="" height="80">
-                            <!-- <span class="logo-lg-text-light">Xeria</span> -->
+                            <img src="/assets/images/logo-quan-cafe-3-1024x768.png" alt="" height="60px">
+<!--                             <span class="logo-lg-text-light">Xeria</span>-->
                         </span>
                 <span class="logo-sm">
                             <!-- <span class="logo-sm-text-dark">X</span> -->
-                            <img src="/assets/images/figure.png" alt="" height="80">
+                            <img src="/assets/images/logo-quan-cafe-3-1024x768.png" alt="" height="60px">
                         </span>
             </a>
-            </th:block>
-            <th:block th:if="${roleCode == 'CUSTOMER'}" >
-                <a href="/shop" class="logo text-center">
-                        <span class="logo-lg">
-                            <img src="/assets/images/figure.png" alt="" height="80">
-                            <!-- <span class="logo-lg-text-light">Xeria</span> -->
-                        </span>
-                    <span class="logo-sm">
-                            <!-- <span class="logo-sm-text-dark">X</span> -->
-                            <img src="/assets/images/figure.png" alt="" height="80">
-                        </span>
-                </a>
-            </th:block>
         </div>
 
 

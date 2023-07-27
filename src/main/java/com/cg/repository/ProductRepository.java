@@ -4,6 +4,8 @@ import com.cg.model.Category;
 import com.cg.model.Product;
 
 import com.cg.model.dto.product.ProductDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +25,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             "pro.unit, " +
             "pro.category, " +
             "pro.productAvatar" +
-            ")" +
+            ") " +
             "FROM Product as pro " +
             "WHERE pro.deleted = false"
     )
@@ -37,7 +39,7 @@ List<ProductDTO> findAllProductDTO();
         "pr.unit, " +
         "pr.category, " +
         "pr. productAvatar " +
-        ")" +
+        ") " +
         "From Product AS pr " +
         "WHERE pr.category.id = :categoryId")
 List<ProductDTO> findAllByCategoryLike(Long categoryId);
@@ -49,11 +51,25 @@ List<ProductDTO> findAllByCategoryLike(Long categoryId);
         "pro.unit, " +
         "pro.category, " +
         "pro.productAvatar" +
-        ")" +
+        ") " +
         "FROM Product as pro " +
         "WHERE pro.title like :keySearch"
 )
 List<ProductDTO> findProductByName(String keySearch);
+
+    @Query("SELECT NEW com.cg.model.dto.product.ProductDTO ( " +
+            "pro.id, " +
+            "pro.title, " +
+            "pro.price, " +
+            "pro.unit, " +
+            "pro.category, " +
+            "pro.productAvatar " +
+            ") " +
+            "FROM Product as pro " +
+            "WHERE pro.deleted = false " +
+            "ORDER BY pro.id ASC"
+    )
+    Page<ProductDTO> findAllProductDTOPage(Pageable pageable);
 }
 
 

@@ -3,7 +3,7 @@
 <head>
     <title>Admin Dashboard Figure</title>
     <th:block th:replace="/layout/head :: head"></th:block>
-    <link rel="stylesheet" href="/assets/bootstrap/v5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/bootstrap/v.5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/styles.css">
 
 </head>
@@ -60,17 +60,17 @@
 
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/jquery/jquery.validate.js"></script>
-<script src="/assets/bootstrap/v5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/bootstrap/v.5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="/assets/js/magnific-popup-1.1.0.js"></script>
 
-<script src="/assets/js/appBase.js"></script>
+<script src="/assets/js/app.js"></script>
 
 <script>
     const page = {
         url: {
-            getAllUser: AppBase.API_USERS,
-            getAllRole: AppBase.API_ROLE
+            getAllUser: App.API_USERS,
+            getAllRole: App.API_ROLE
         },
         elements: {},
         loadData: {},

@@ -128,12 +128,12 @@
 <script>
     const page = {
         url: {
-            getAllProducts: "http://localhost:9000/api/products",
-            getALLTabOrders: "http://localhost:9000/api/tableOrders",
-            getProductById: 'http://localhost:9000/api/products',
-            getOrderDetailsByTableId: 'http://localhost:9000/api/orders/table',
-            getOrderByTableId : 'http://localhost:9000/api/orders/table',
-            getProductByName:"http://localhost:9000/api/products/searchName"
+            getAllProducts: App.API_PRODUCT,
+            getALLTabOrders: App.API_TABLE_ORDER,
+            getProductById: App.API_PRODUCT,
+            getOrderDetailsByTableId: App.API_ORDER_BY_TABLE_ID,
+            getOrderByTableId : App.API_ORDER_BY_TABLE_ID,
+            getProductByName:App.API_PRODUCT_SEARCH_NAME
         },
         elements: {},
         loadData: {},
@@ -212,7 +212,7 @@
                           ${product.title}
                       </div>
                       <div class="product-title-bottom" style="font-size: 16px">
-                      <span>
+                      <span class="num-point">
                           ${product.price}
                       </span>
                       <span>
@@ -426,7 +426,7 @@
                     <div class="col-12">
                         <span style="font-size: 24px">${data.title}</span>
                         <div class="imageProductDetail">
-                            <img id="imgPro" style="height: 100%;width: 100%;" src="${data.avatar.fileUrl}" alt="">
+                            <img id="imgPro" style="height: 100%;width: 100%; border: none; border-radius: 15px;" src="${data.avatar.fileUrl}" alt="">
                         </div>
                     </div>
                 </div>

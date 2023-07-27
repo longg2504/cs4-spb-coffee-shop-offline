@@ -3,7 +3,7 @@
 <head>
     <title>Admin Dashboard Figure</title>
     <th:block th:replace="/layout/head :: head"></th:block>
-    <link rel="stylesheet" href="/assets/bootstrap/v5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/bootstrap/v.5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="/assets/css/magnific-popup.css">
     <link rel="stylesheet" href="/assets/css/preview-image.css">
@@ -60,7 +60,6 @@
                             <th scope="col">Image</th>
                             <th scope="col">Price</th>
                             <th scope="col">Unit</th>
-                            <th scope="col">Description</th>
                             <th scope="col">Category</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -98,6 +97,18 @@
 <script>
     const page = {
         url: {
+            getAllProductsPage: App.API_PRODUCT + "/page" ,
+            getAllProducts:App.API_PRODUCT,
+            getALLTabOrders: App.API_TABLE_ORDER,
+            getProductById: App.API_PRODUCT,
+            getOrderDetailsByTableId: App.API_ORDER_BY_TABLE_ID,
+            getOrderByTableId : App.API_ORDER_BY_TABLE_ID,
+            getProductByName:App.API_PRODUCT_SEARCH_NAME,
+            getAllCategories: App.API_CATEGORY,
+
+            doCreate: App.API_CREATE_PRODUCT,
+            doUpdate: App.API_UPDATE_PRODUCT,
+            doDelete: App.API_DELETE_PRODUCT
 
         },
         elements: {},
@@ -135,10 +146,8 @@
     page.dialogs.elements.modalUpdate = $('#mdUpdate')
     page.dialogs.elements.errorUpdateArea = $('#mdUpdate .modal-body .modal-alert-danger')
     page.dialogs.elements.productTitleUP = $('#productTitleUP')
-    page.dialogs.elements.productQuantityUp = $('#productQuantityUp')
     page.dialogs.elements.productPriceUp = $('#productPriceUp')
     page.dialogs.elements.productUnitUp = $('#productUnitUp')
-    page.dialogs.elements.descriptionUp = $('#descriptionUp')
     page.dialogs.elements.btnUpdate = $('#btnUpdate')
     page.dialogs.elements.categorySelectUpdate = $('#categorySelectUpdate')
 
@@ -167,26 +176,28 @@
     let tempProduct = jQuery.validator.format($.trim(page.elements.tempProduct.val().toString()));
 
     page.commands.addRow = (price) => {
-        let image_thumbnail = AppBase.BASE_URL_CLOUD_IMAGE + "/" + AppBase.IMAGE_SCALE_W_100_h_80_Q_90 + "/" + avatar.fileFolder + "/" + avatar.fileName;
-        let imageFileUrl = AppBase.BASE_URL_CLOUD_IMAGE + "/" + avatar.fileFolder + "/" + avatar.fileName;
+        let image_thumbnail = App.BASE_URL_CLOUD_IMAGE + "/" + App.IMAGE_SCALE_W_100_h_80_Q_90 + "/" + avatar.fileFolder + "/" + avatar.fileName;
+        let imageFileUrl = App.BASE_URL_CLOUD_IMAGE + "/" + avatar.fileFolder + "/" + avatar.fileName;
         let aClass = "image-popup-vertical-fit";
 
-        page.elements.frmListProduct.append($(tempProduct(product.id, product.title, price, product.quantity, product.unit, product.description, product.categoryTitle, imageFileUrl, image_thumbnail, aClass)));
+        page.elements.frmListProduct.append($(tempProduct(product.id, product.title, price, product.unit,  product.category, imageFileUrl, image_thumbnail, aClass)));
     }
 
     page.commands.replace = (productId, price) => {
-        let image_thumbnail = AppBase.BASE_URL_CLOUD_IMAGE + "/" + AppBase.IMAGE_SCALE_W_100_h_80_Q_90 + "/" + avatar.fileFolder + "/" + avatar.fileName;
-        let imageFileUrl = AppBase.BASE_URL_CLOUD_IMAGE + "/" + avatar.fileFolder + "/" + avatar.fileName;
+        let image_thumbnail = App.BASE_URL_CLOUD_IMAGE + "/" + App.IMAGE_SCALE_W_100_h_80_Q_90 + "/" + avatar.fileFolder + "/" + avatar.fileName;
+        let imageFileUrl = App.BASE_URL_CLOUD_IMAGE + "/" + avatar.fileFolder + "/" + avatar.fileName;
         let aClass = "image-popup-vertical-fit";
 
-        $('#tr_' + productId).replaceWith($(tempProduct(product.id, product.title, price, product.quantity, product.unit, product.description, product.categoryTitle, imageFileUrl, image_thumbnail, aClass)));
+
+        $('#tr_' + productId).replaceWith($(tempProduct(product.id, product.title, price, product.unit,  product.categoryTitle, imageFileUrl, image_thumbnail, aClass)));
     }
+
 
 
     page.commands.getAllProduct = (pageProduct, pageSize) => {
         $.ajax({
             type: 'GET',
-            url: page.url.getAllProduct,
+            url: page.url.getAllProductsPage,
             data: {
                 page: pageProduct,
                 pageSize: pageSize
@@ -196,7 +207,7 @@
                 page.elements.frmListProduct.empty();
                 let price = 0;
                 $.each(data.content, (index, item) => {
-                    product = new Product(item.id, item.title, item.price, item.quantity, item.unit, item.description, item.category.title);
+                    product = new Product(item.id, item.title, item.price, item.unit,item.category.title);
                     avatar = item.avatar;
                     price = product.price.toLocaleString('vi', {style: 'currency', currency: 'VND'});
                     page.commands.addRow(price);
@@ -208,19 +219,10 @@
                 // page.commands.addEventShowActionButton();
             })
             .fail(function () {
-                AppBase.SweetAlert.showErrorAlert(AppBase.AlertMessageVi.ERROR_404);
+                functionApp.SweetAlert.showErrorAlert(AppBase.AlertMessageVi.ERROR_404);
             });
     }
 
-    // page.commands.loadProduct = (products) => {
-    //     page.elements.productCarts.empty();
-    //
-    //     $.each(products, (index, item) => {
-    //         const str = page.commands.renderProduct(item);
-    //
-    //         page.elements.productCarts.prepend(str)
-    //     })
-    // }
 
     page.commands.displayPagination = (totalPages, currentPage) => {
         page.elements.pagination.empty();
@@ -240,7 +242,7 @@
     page.commands.getProductById = (productId) => {
         return $.ajax({
             type: 'GET',
-            url: page.url.getAllProduct + '/' + productId
+            url: page.url.getAllProducts + '/' + productId
         });
     }
 
@@ -255,6 +257,7 @@
             url: page.url.getAllCategories,
         })
             .done((data) => {
+                console.log(data)
                 page.dialogs.elements.categorySelectCreate.empty();
                 page.dialogs.elements.categorySelectUpdate.empty();
 
@@ -287,18 +290,17 @@
             page.commands.getProductById(productId).then((data) => {
                 if (data !== {}) {
                     product = data;
+                    console.log(product)
                     avatar = product.avatar;
 
                     page.dialogs.elements.productTitleUP.val(product.title);
                     page.dialogs.elements.productPriceUp.val(product.price);
                     page.dialogs.elements.productUnitUp.val(product.unit);
-                    page.dialogs.elements.productQuantityUp.val(product.quantity);
+
 
 
                     page.dialogs.elements.categorySelectUpdate.val(product.category.id);
 
-
-                    page.dialogs.elements.descriptionUp.val(product.description);
 
                     page.dialogs.commands.loadImageToCanvasUpdate(null, "", avatar.fileUrl);
 
@@ -314,13 +316,12 @@
             page.commands.clearForm();
         });
 
-        // page.commands.getCategories();
-        // page.dialogs.elements.modalUpdate.modal('show');
+
     }
 
     page.commands.showDeleteConfirm = () => {
 
-        AppBase.SweetAlert.showDeleteConfirmDialog()
+        App.SweetAlert.showDeleteConfirmDialog()
             .then((result) => {
                 if (result.isConfirmed) {
                     page.commands.deleteProduct();
@@ -416,7 +417,6 @@
         formData.append("title", page.dialogs.elements.productTitle.val().toString());
         formData.append("price", page.dialogs.elements.productPrice.val().toString());
         formData.append("unit", page.dialogs.elements.productUnit.val().toString());
-        formData.append("description", page.dialogs.elements.description.val().toString());
         formData.append("categoryId", page.dialogs.elements.categorySelectCreate.val());
         formData.append("avatar", page.dialogs.elements.imageFileCreate[0].files[0]);
 
@@ -434,7 +434,7 @@
             let price = product.price.toLocaleString('vi', {style: 'currency', currency: 'VND'});
             page.commands.addRow(price);
 
-            AppBase.SweetAlert.showSuccessAlert(AppBase.AlertMessageEn.SUCCESS_CREATED);
+            App.SweetAlert.showSuccessAlert(App.AlertMessageEn.SUCCESS_CREATED);
 
             page.dialogs.elements.modalCreate.modal('hide');
             page.commands.handleImagePopup();
@@ -443,7 +443,7 @@
             page.dialogs.elements.frmCreateCustomer.trigger("reset");
         }).fail((err) => {
             console.log(err)
-            AppBase.SweetAlert.showErrorAlert(AppBase.AlertMessageVi.ERROR_404);
+            App.SweetAlert.showErrorAlert(App.AlertMessageVi.ERROR_404);
         }).always(function () {
 
             page.elements.loader.addClass("hide");
@@ -455,15 +455,11 @@
 
         page.elements.loader.removeClass("hide");
         page.dialogs.elements.btnUpdate.prop('disabled', true);
-        // page.commands.showLoadingSpinner();
-
 
         let formData = new FormData();
         formData.append("title", page.dialogs.elements.productTitleUP.val().toString());
         formData.append("price", page.dialogs.elements.productPriceUp.val().toString());
-        formData.append("quantity", page.dialogs.elements.productQuantityUp.val().toString());
         formData.append("unit", page.dialogs.elements.productUnitUp.val().toString());
-        formData.append("description", page.dialogs.elements.descriptionUp.val().toString());
         formData.append("categoryId", page.dialogs.elements.categorySelectUpdate.val());
 
         if (page.dialogs.elements.imageFileUpdate[0].files[0] != null) {
@@ -483,19 +479,17 @@
             let price = product.price.toLocaleString('vi', {style: 'currency', currency: 'VND'});
             page.commands.replace(productId, price);
 
-            AppBase.SweetAlert.showSuccessAlert(AppBase.AlertMessageEn.SUCCESS_UPDATED);
+            App.SweetAlert.showSuccessAlert(App.AlertMessageEn.SUCCESS_UPDATED);
 
             page.dialogs.elements.modalUpdate.modal('hide');
-
             page.commands.handleImagePopup();
             page.commands.showUpdateModal();
-            // page.commands.hideLoadingSpinner();
             page.dialogs.elements.clearImagePreview()
             page.dialogs.elements.frmUpdateCustomer.trigger("reset");
 
         }).fail((err) => {
             console.log(err)
-            AppBase.SweetAlert.showErrorAlert(AppBase.AlertMessageVi.ERROR_400);
+            App.SweetAlert.showErrorAlert(AppBase.AlertMessageVi.ERROR_400);
         }).always(function () {
             page.elements.loader.addClass("hide");
             page.dialogs.elements.btnUpdate.prop('disabled', false);
@@ -514,14 +508,14 @@
             url: page.url.doDelete + '/' + product.id,
         }).done((data) => {
 
-            AppBase.SweetAlert.showSuccessAlert(AppBase.AlertMessageEn.SUCCESS_DELETED);
+            App.SweetAlert.showSuccessAlert(App.AlertMessageEn.SUCCESS_DELETED);
 
             $("#tr_" + product.id).remove();
 
             page.commands.handleImagePopup();
 
         }).fail(function (jqXHR) {
-            AppBase.SweetAlert.showErrorAlert(jqXHR.responseJSON.message);
+            App.SweetAlert.showErrorAlert(jqXHR.responseJSON.message);
         }).always(function () {
             page.elements.loader.addClass("hide");
         });
