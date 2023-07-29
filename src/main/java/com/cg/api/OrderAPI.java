@@ -49,7 +49,6 @@ public class OrderAPI {
     private AppUtils appUtils;
 
 
-
     @GetMapping("/table/{tableId}")
     public ResponseEntity<?> getOrderByTableId(@PathVariable("tableId") String tableIdStr) {
         if (!validateUtils.isNumberValid(tableIdStr)) {
@@ -90,7 +89,7 @@ public class OrderAPI {
     public ResponseEntity<?> deleteOrder(OrderReqDTO orderReqDTO) {
         Long tableId = Long.valueOf(orderReqDTO.getTableOrder().getId());
         TableOrder tableOrder = tableOrderService.findById(tableId).get();
-        if(tableOrder.getStatus() == ETableStatus.EMPTY) {
+        if (tableOrder.getStatus() == ETableStatus.EMPTY) {
             throw new DataInputException("Bàn không có sản phẩm nào");
         } else {
             OrderResDTO orderResDTO = orderService.deleteByIdOrder(orderReqDTO, tableOrder);
@@ -99,7 +98,7 @@ public class OrderAPI {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> creOrder(@RequestBody  OrderCreReqDTO orderCreReqDTO){
+    public ResponseEntity<?> creOrder(@RequestBody OrderCreReqDTO orderCreReqDTO) {
         String username = appUtils.getPrincipalUsername();
         Optional<User> userOptional = userService.findByName(username);
 
@@ -121,8 +120,9 @@ public class OrderAPI {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @PatchMapping("/update")
-    public ResponseEntity<?> upOrder(@RequestBody OrderUpReqDTO orderUpReqDTO){
+    public ResponseEntity<?> upOrder(@RequestBody OrderUpReqDTO orderUpReqDTO) {
         String username = appUtils.getPrincipalUsername();
         Optional<User> userOptional = userService.findByName(username);
 
@@ -146,15 +146,49 @@ public class OrderAPI {
 
         Order order = orders.get(0);
 
-        if (tableOrder.getStatus() == ETableStatus.BUSY){
+        if (tableOrder.getStatus() == ETableStatus.BUSY) {
             OrderDetailUpResDTO orderDetailUpResDTO = orderService.upOrderDetail(orderUpReqDTO, order, product, userOptional.get());
-            return new ResponseEntity<>(orderDetailUpResDTO ,HttpStatus.OK);
+            return new ResponseEntity<>(orderDetailUpResDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping("/update/changeToTable")
+    public ResponseEntity<?> changeToTable(@RequestBody OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO) {
+        String username = appUtils.getPrincipalUsername();
+        Optional<User> userOptional = userService.findByName(username);
+
+        TableOrder tableOrderBusy = tableOrderService.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).orElseThrow(() -> {
+            throw new DataInputException("Bàn không tồn tại");
+        });
+        TableOrder tableOrderEmpty = tableOrderService.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).orElseThrow(() -> {
+            throw new DataInputException("Bàn không tồn tại");
+        });
+
+        List<Order> orderEmptys = orderService.findByTableOrderAndPaid(tableOrderEmpty, false);
+        List<Order> orderBusys = orderService.findByTableOrderAndPaid(tableOrderBusy, false);
+
+        if (orderBusys.size() == 0) {
+            throw new DataInputException("Bàn chuyển này không có hoá đơn, vui lòng kiểm tra lại thông tin");
+        }
+
+        if (orderBusys.size() > 1) {
+            throw new DataInputException("Lỗi hệ thống, vui lòng liên hệ ADMIN để kiểm tra lại dữ liệu");
+        }
+
+        if (orderEmptys.size() == 0) {
+            throw new DataInputException("Bàn nhận này đang có hoá đơn, vui lòng kiểm tra lại thông tin");
+        }
+
+
+        OrderUpChangeToTableResDTO orderUpChangeToTableResDTO = orderService.changeToTable(orderUpChangeToTableReqDTO, userOptional.get());
+
+        return new ResponseEntity<>(orderUpChangeToTableResDTO, HttpStatus.OK);
+
+    }
+
     @GetMapping("/get-username")
-    public ResponseEntity<?> getUserName(){
+    public ResponseEntity<?> getUserName() {
         String username = appUtils.getPrincipalUsername();
         Optional<User> optionalUser = userService.findByName(username);
 
@@ -163,10 +197,8 @@ public class OrderAPI {
         Long name = optionalUser.get().getId();
 
 
-
-        return new ResponseEntity<>(name,HttpStatus.OK);
+        return new ResponseEntity<>(name, HttpStatus.OK);
     }
-
 
 
 }

@@ -57,11 +57,11 @@
                         </div>
                         <div>
 
-                        <div class="tab-pane fade hide" id="menu-pannel" role="tabpanel" aria-labelledby="menu-tab"
-                             tabindex="0">
+                            <div class="tab-pane fade hide" id="menu-pannel" role="tabpanel" aria-labelledby="menu-tab"
+                                 tabindex="0">
 
 
-                        </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -124,8 +124,6 @@
 <script src="/assets/js/app.js"></script>
 
 
-
-
 <script>
     const page = {
         url: {
@@ -133,8 +131,8 @@
             getALLTabOrders: App.API_TABLE_ORDER,
             getProductById: App.API_PRODUCT,
             getOrderDetailsByTableId: App.API_ORDER_BY_TABLE_ID,
-            getOrderByTableId : App.API_ORDER_BY_TABLE_ID,
-            getProductByName:App.API_PRODUCT_SEARCH_NAME,
+            getOrderByTableId: App.API_ORDER_BY_TABLE_ID,
+            getProductByName: App.API_PRODUCT_SEARCH_NAME,
             createOrder: App.API_ORDER + '/create',
             updateOrder: App.API_ORDER + '/update'
         },
@@ -184,7 +182,6 @@
     page.elements.searchProduct = $('#searchProduct');
 
 
-
     let tableStatus = 'EMPTY';
     let product = new Product();
     let tableOrder = new TableOrder();
@@ -199,6 +196,11 @@
                 <button style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
                   <i class="fas fa-coffee"></i>
                 </button>
+            <!--                h-->
+                <button>
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+<!--                h-->
               </div>
               <div class="tab-content-item  text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
                 <span>${tableOrder.status}</span>
@@ -268,13 +270,13 @@
             url: page.url.getALLTabOrders
         })
             .done((data) => {
-                    page.elements.tablePannel.empty();
-                    data.forEach(item => {
-                        tableOrder = item;
-                        let str = page.commands.renderTable(tableOrder)
-                        page.elements.tablePannel.prepend(str)
+                page.elements.tablePannel.empty();
+                data.forEach(item => {
+                    tableOrder = item;
+                    let str = page.commands.renderTable(tableOrder)
+                    page.elements.tablePannel.prepend(str)
 
-                    })
+                })
 
             })
     }
@@ -303,16 +305,16 @@
     }
 
     page.commands.getListOrderDetailByTableId = (tableId) => {
-       $.ajax({
-           type: 'GET',
-           url: page.url.getOrderDetailsByTableId + '/list-order-details' +tableId
-       })
-           .done((data) => {
-               if(data && data.length > 0) {
-                   page.elements.tbOrderItemsBody.empty();
+        $.ajax({
+            type: 'GET',
+            url: page.url.getOrderDetailsByTableId + '/list-order-details' + tableId
+        })
+            .done((data) => {
+                if (data && data.length > 0) {
+                    page.elements.tbOrderItemsBody.empty();
 
-                   $.each(data, (index,item) => {
-                       let str = `
+                    $.each(data, (index, item) => {
+                        let str = `
                         <tr>
                             <td class="text-center">${item.title}</td>
                             <td class="text-center">${item.quantity}</td>
@@ -321,17 +323,17 @@
                             <td class="text-center">${item.amount}</td>
                         </tr>
                 `
-                       page.elements.tbOrderItemsBody.append(str);
-                   })
-               }
-           })
-           .fail((jqXHR) => {
-               console.log(jqXHR);
-           })
+                        page.elements.tbOrderItemsBody.append(str);
+                    })
+                }
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR);
+            })
     }
 
     page.commands.getOrderDetailsByTableId = (tableId) => {
-       return $.ajax({
+        return $.ajax({
             type: 'GET',
             url: page.url.getOrderDetailsByTableId + '/' + tableId
         })
@@ -351,8 +353,7 @@
 
                     page.elements.boardWaiting.addClass('hide');
                     page.elements.contentItems.removeClass('hide');
-                }
-                else {
+                } else {
                     page.elements.boardWaiting.removeClass('hide');
                     page.elements.contentItems.addClass('hide');
 
@@ -365,7 +366,7 @@
             })
     }
 
-    page.commands.getProductByName = () =>  {
+    page.commands.getProductByName = () => {
         let searchProduct = page.elements.searchProduct.val();
         page.elements.menuPannel.empty();
         if (searchProduct == "") {
@@ -380,11 +381,10 @@
                         page.elements.menuPannel.prepend(str);
                     })
                 })
-        }
-        else{
+        } else {
             $.ajax({
                 type: 'GET',
-                url: page.url.getProductByName + "/" +searchProduct
+                url: page.url.getProductByName + "/" + searchProduct
             })
                 .done((data) => {
                     data.forEach(item => {
@@ -405,12 +405,12 @@
         page.dialogs.elements.modalPayment.modal('show');
     }
 
-    page.commands.doCreateOrder = (currentTableId,productId,quantity,note) => {
+    page.commands.doCreateOrder = (currentTableId, productId, quantity, note) => {
         let obj = {
-            tableId : currentTableId,
-            quantity : quantity,
-            productId : productId,
-            note : note
+            tableId: currentTableId,
+            quantity: quantity,
+            productId: productId,
+            note: note
         }
 
         $.ajax({
@@ -450,12 +450,12 @@
 
     }
 
-    page.commands.doUpdateOrder = (currentTableId,productId,quantity,note) => {
+    page.commands.doUpdateOrder = (currentTableId, productId, quantity, note) => {
         let obj = {
-            tableId : currentTableId,
-            quantity : quantity,
-            productId : productId,
-            note : note
+            tableId: currentTableId,
+            quantity: quantity,
+            productId: productId,
+            note: note
         }
 
         $.ajax({
@@ -498,10 +498,9 @@
     }
 
     page.commands.showHideSearchDiv = () => {
-        if (page.elements.menuPannel.hasClass('active','show')) {
+        if (page.elements.menuPannel.hasClass('active', 'show')) {
             page.elements.divSearchProduct.removeClass('hide');
-        }
-        else {
+        } else {
             page.elements.divSearchProduct.addClass('hide');
         }
     }
@@ -520,37 +519,34 @@
         })
 
 
-        page.elements.tablePannel.on('click', '.container-tab-item', function() {
+        page.elements.tablePannel.on('click', '.container-tab-item', function () {
             currentTable = $(this).data('id');
             tableStatus = $(this).data('status');
             page.elements.tableCurrent.find('span').text('Bàn ' + currentTable);
             page.commands.getOrderDetailsByTableId(currentTable);
         })
 
-        page.dialogs.elements.btnOrderProduct.on('click' , function() {
+        page.dialogs.elements.btnOrderProduct.on('click', function () {
             let productId = $('.idPro').val();
             let quantity = $('#quantityPro').val();
             let note = $('#notePro').val();
-            if(tableStatus == "EMPTY"){
-                page.commands.doCreateOrder(currentTable,productId,quantity,note);
-            }
-            else {
-                page.commands.doUpdateOrder(currentTable,productId,quantity,note);
+            if (tableStatus == "EMPTY") {
+                page.commands.doCreateOrder(currentTable, productId, quantity, note);
+            } else {
+                page.commands.doUpdateOrder(currentTable, productId, quantity, note);
             }
         })
 
-        page.dialogs.elements.btnPayment.on('click' , function(){
+        page.dialogs.elements.btnPayment.on('click', function () {
             console.log(currentTable)
-                page.commands.getListOrderDetailByTableId(currentTable);
-                page.commands.handleAddEventShowPayment();
-
-
+            page.commands.getListOrderDetailByTableId(currentTable);
+            page.commands.handleAddEventShowPayment();
 
 
         })
 
 
-        page.elements.menuPannel.on('click', '.container-product-item', function() {
+        page.elements.menuPannel.on('click', '.container-product-item', function () {
             const productId = $(this).data('id');
 
             page.commands.getProductById(productId).then((data) => {
@@ -569,7 +565,10 @@
                     <div class="col-12" style="margin-top:28px">
                         <p id="titlePro"  style="font-size: 22px">${data.title}</p>
                         <div class="price">
-                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</span></p>
+                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {
+                    style: 'currency',
+                    currency: 'VND'
+                })}</span></p>
                         </div>
                         <div class="quantityProductDetail">
                             <p>
@@ -596,7 +595,7 @@
             });
         })
 
-        page.elements.searchProduct.on('change' , function () {
+        page.elements.searchProduct.on('change', function () {
             page.commands.getProductByName();
         })
 

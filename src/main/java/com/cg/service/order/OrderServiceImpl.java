@@ -340,6 +340,33 @@ public class OrderServiceImpl implements IOrderService {
         return orderDetailUpResDTO;
     }
 
+    @Override
+    public OrderUpChangeToTableResDTO changeToTable(OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO, User user) {
+
+        Order orderBusy =  orderRepository.findByTableId(orderUpChangeToTableReqDTO.getTableIdBusy()).get();
+
+        TableOrder emptyTable = tableOrderRepository.findById(orderUpChangeToTableReqDTO.getTableIdEmpty()).get();
+        emptyTable.setStatus(ETableStatus.BUSY);
+        tableOrderRepository.save(emptyTable);
+
+        orderBusy.setTableOrder(emptyTable);
+        orderRepository.save(orderBusy);
+
+        TableOrder busyTable = tableOrderRepository.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).get();
+        busyTable.setStatus(ETableStatus.EMPTY);
+        tableOrderRepository.save(busyTable);
+
+        List<OrderDetailProductUpResDTO> newOrderDetails = orderDetailRepository.findAllOrderDetailProductUpResDTO(orderBusy.getId());
+
+        OrderUpChangeToTableResDTO orderUpChangeToTableResDTO = new OrderUpChangeToTableResDTO();
+        orderUpChangeToTableResDTO.setTable(orderBusy.getTableOrder().toTableOrderResDTO());
+        orderUpChangeToTableResDTO.setTotalAmount(orderBusy.getTotalAmount());
+        orderUpChangeToTableResDTO.setProducts(newOrderDetails);
+
+
+        return orderUpChangeToTableResDTO;
+    }
+
     public BigDecimal getOrderTotalAmount(Long orderId) {
         return orderRepository.getOrderTotalAmount(orderId);
     }
