@@ -23,14 +23,13 @@ public class Bill extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
      @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
      @OneToOne
     @JoinColumn(name = "order_id",referencedColumnName = "id",nullable = false)
     private Order order;
-
-
 
     public BillResDTO toBillResDTO() {
         return new BillResDTO()

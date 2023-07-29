@@ -1,5 +1,4 @@
-package com.cg.model.dto.orderDetail;
-
+package com.cg.model.dto.order;
 
 import com.cg.model.ProductAvatar;
 import com.cg.model.dto.productAvatar.ProductAvatarResDTO;
@@ -17,26 +16,24 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class OrderDetailByTableResDTO {
+public class OrderDetailProductUpResDTO {
 
-    private Long orderDetailId;
+    private Long id;
     private Long productId;
     private String title;
     private BigDecimal price;
     private Long quantity;
     private BigDecimal amount;
-    private String unit;
     private String note;
     private ProductAvatarResDTO avatar;
 
-    public OrderDetailByTableResDTO(Long orderDetailId, Long productId, String title, BigDecimal price, Long quantity, BigDecimal amount, String unit, String note, ProductAvatar avatar) {
-        this.orderDetailId = orderDetailId;
+    public OrderDetailProductUpResDTO(Long id, Long productId, String title, BigDecimal price, Long quantity, BigDecimal amount, String note, ProductAvatar avatar) {
+        this.id = id;
         this.productId = productId;
         this.title = title;
         this.price = price;
         this.quantity = quantity;
         this.amount = amount;
-        this.unit = unit;
         this.note = note;
         this.avatar = avatar.toProductAvatarDTO();
     }

@@ -1,10 +1,7 @@
 package com.cg.model;
 
 
-import com.cg.model.dto.order.OrderCreResDTO;
-import com.cg.model.dto.order.OrderDTO;
-import com.cg.model.dto.order.OrderResDTO;
-import com.cg.model.dto.order.OrderUpResDTO;
+import com.cg.model.dto.order.*;
 import com.cg.model.dto.orderDetail.OrderDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -82,4 +79,6 @@ public class Order extends BaseEntity {
                 .setTableId(tableOrder.getId())
                 ;
     }
+
+
 }

@@ -1,12 +1,12 @@
 package com.cg.model.enums;
 
-public enum EStatus {
-    ROLE_STOCKING("EMPTY"),
-    ROLE_OUT_OF_STOCK("BUSY");
+public enum ETableStatus {
+    EMPTY("EMPTY"),
+    BUSY("BUSY");
 
     private final String value;
 
-    EStatus(String value) {
+    ETableStatus(String value) {
         this.value = value;
     }
 

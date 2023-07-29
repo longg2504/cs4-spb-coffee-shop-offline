@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -12,8 +15,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class OrderUpResDTO {
     private Long tableId;
-    private Integer quantity;
-    private Long productId;
-    private String note;
-    private String userName;
+    private BigDecimal totalAmount;
+
+    private List<OrderDetailCreResDTO> orderDetails;
 }

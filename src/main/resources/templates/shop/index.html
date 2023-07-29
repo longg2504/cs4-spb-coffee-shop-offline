@@ -100,10 +100,10 @@
                     <div class="wrapper-footer">
                         <div class="wrapper-footer-header">
                             <span>Tổng tiền</span>
-                            <span id="totalAmount">0 vnd</span>
+                            <span id="totalAmount"></span>
                         </div>
                         <div class="wrapper-footer-btn mt-5">
-                            <button type="button" class="btn btn-success" id="btnCreateProduct">
+                            <button type="button" class="btn btn-success" id="btnPayment">
                                 <i class="fas fa-money-bill"></i>Thanh Toán
                             </button>
                         </div>
@@ -116,6 +116,7 @@
 </div>
 
 <th:block th:replace="shop/modalProductDetail"/>
+<th:block th:replace="shop/modalPayment"/>
 </body>
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/js/jquery.validate.min.js"></script>
@@ -133,7 +134,9 @@
             getProductById: App.API_PRODUCT,
             getOrderDetailsByTableId: App.API_ORDER_BY_TABLE_ID,
             getOrderByTableId : App.API_ORDER_BY_TABLE_ID,
-            getProductByName:App.API_PRODUCT_SEARCH_NAME
+            getProductByName:App.API_PRODUCT_SEARCH_NAME,
+            createOrder: App.API_ORDER + '/create',
+            updateOrder: App.API_ORDER + '/update'
         },
         elements: {},
         loadData: {},
@@ -166,12 +169,17 @@
     page.dialogs.elements.modalProductDetail = $('#modalProductDetail');
     page.dialogs.elements.frmProductDetail = $('#frmProductDetail');
     page.dialogs.elements.imgPro = $('#imgPro');
+    page.dialogs.elements.idPro = $('.idPro');
     page.dialogs.elements.titlePro = $('#titlePro');
     page.dialogs.elements.pricePro = $('#pricePro');
     page.dialogs.elements.quantityPro = $('#quantityPro');
     page.dialogs.elements.unitPro = $('#unitPro');
     page.dialogs.elements.notePro = $('#notePro');
     page.dialogs.elements.btnOrderProduct = $('#btnOrderProduct');
+
+    page.dialogs.elements.modalPayment = $('#modalPayment');
+    page.elements.tbOrderItemsBody = $("#tbOrderItems tbody")
+    page.dialogs.elements.btnPayment = $('#btnPayment');
 
     page.elements.searchProduct = $('#searchProduct');
 
@@ -186,7 +194,7 @@
     page.commands.renderTable = (tableOrder) => {
 
         return `
-            <div class="container-tab-item col-3" data-id="${tableOrder.id}" data-status="${tableOrder.status}">
+            <div id="tr_${tableOrder.id}" class="container-tab-item col-3" data-id="${tableOrder.id}" data-status="${tableOrder.status}">
               <div  class="tab-header text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
                 <button style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
                   <i class="fas fa-coffee"></i>
@@ -212,8 +220,8 @@
                           ${product.title}
                       </div>
                       <div class="product-title-bottom" style="font-size: 16px">
-                      <span class="num-point">
-                          ${product.price}
+                      <span>
+                          ${product.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}
                       </span>
                       <span>
                         ${product.unit}
@@ -228,8 +236,7 @@
         return `
         <div class="item d-flex">
             <div class="image">
-                <img src="${obj.avatar.fileUrl}"
-                     alt="">
+                <img src="${obj.avatar.fileUrl}" style="height: 115px; width: 120px;" alt="">
             </div>
             <div class="item-content" style="margin-left: 10px;">
                 <div class="title-close d-flex justify-content-between">
@@ -239,15 +246,13 @@
                     </button>
                 </div>
                 <div class="price-quantity d-flex justify-content-between">
-                    <span>Gia : ${obj.price}</span>
+                    <span>Giá : ${obj.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</span>
                     <form action="">
                         <div class="quantity d-flex">
-                            <button type="button"><i class="fas fa-minus"></i></button>
                             <span>${obj.quantity}</span>
-                            <button type="button"><i class="fas fa-plus"></i></button>
                         </div>
                     </form>
-                    <span>${obj.amount}</span>
+                    <span>${obj.amount.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</span>
                 </div>
                 <div class="note d-flex">
                     <span>Note: ${obj.note}</span>
@@ -297,13 +302,40 @@
 
     }
 
+    page.commands.getListOrderDetailByTableId = (tableId) => {
+       $.ajax({
+           type: 'GET',
+           url: page.url.getOrderDetailsByTableId + '/list-order-details' +tableId
+       })
+           .done((data) => {
+               if(data && data.length > 0) {
+                   page.elements.tbOrderItemsBody.empty();
+
+                   $.each(data, (index,item) => {
+                       let str = `
+                        <tr>
+                            <td class="text-center">${item.title}</td>
+                            <td class="text-center">${item.quantity}</td>
+                            <td class="text-center">${item.note}</td>
+                            <td class="text-center">${item.price}</td>
+                            <td class="text-center">${item.amount}</td>
+                        </tr>
+                `
+                       page.elements.tbOrderItemsBody.append(str);
+                   })
+               }
+           })
+           .fail((jqXHR) => {
+               console.log(jqXHR);
+           })
+    }
+
     page.commands.getOrderDetailsByTableId = (tableId) => {
-        $.ajax({
+       return $.ajax({
             type: 'GET',
             url: page.url.getOrderDetailsByTableId + '/' + tableId
         })
             .done((data) => {
-                console.log(data)
                 if (data && data.length > 0) {
                     page.elements.contentItems.empty();
 
@@ -314,7 +346,7 @@
                         totalAmount += item.amount;
                     })
 
-                    $('#totalAmount').text(totalAmount + ' vnd')
+                    $('#totalAmount').text(totalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}))
 
 
                     page.elements.boardWaiting.addClass('hide');
@@ -324,11 +356,10 @@
                     page.elements.boardWaiting.removeClass('hide');
                     page.elements.contentItems.addClass('hide');
 
-                    $('#totalAmount').text('0 vnd')
+                    $('#totalAmount').text('0đ')
                 }
             })
             .fail((jqXHR) => {
-                console.log(jqXHR)
                 page.elements.boardWaiting.removeClass('hide');
                 page.elements.contentItems.addClass('hide');
             })
@@ -343,7 +374,6 @@
                 url: page.url.getAllProducts
             })
                 .done((data) => {
-                    console.log(data)
                     data.forEach(item => {
                         product = item;
                         const str = page.commands.renderProduct(product)
@@ -357,7 +387,6 @@
                 url: page.url.getProductByName + "/" +searchProduct
             })
                 .done((data) => {
-                    console.log(data)
                     data.forEach(item => {
                         product = item;
                         const str = page.commands.renderProduct(product)
@@ -372,16 +401,100 @@
         page.dialogs.elements.modalProductDetail.modal('show');
     }
 
-    page.commands.doOrder = () => {
-        const image = page.dialogs.elements.imgPro.val();
-        const title = page.dialogs.elements.titlePro.val();
-        const price = page.dialogs.elements.pricePro.val();
-        const quantity = page.dialogs.elements.quantityPro.val();
-        const unit = page.dialogs.elements.unitPro.val();
-        const note = page.dialogs.elements.notePro.val();
-        const totalAmount = price * quantity;
+    page.commands.handleAddEventShowPayment = () => {
+        page.dialogs.elements.modalPayment.modal('show');
+    }
+
+    page.commands.doCreateOrder = (currentTableId,productId,quantity,note) => {
+        let obj = {
+            tableId : currentTableId,
+            quantity : quantity,
+            productId : productId,
+            note : note
+        }
+
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'POST',
+
+            url: page.url.createOrder,
+            data: JSON.stringify(obj)
+        })
+            .done((data) => {
+                console.log("doOrder ========")
+                console.log(data)
+                page.elements.contentItems.empty();
+
+                tableStatus = 'BUSY';
+
+                let totalAmount = data.totalAmount;
+                const str = page.commands.renderOrderDetail(data);
+                page.elements.contentItems.append(str);
+
+                page.elements.boardWaiting.addClass('hide');
+                page.elements.contentItems.removeClass('hide');
+
+                $('#totalAmount').text(totalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}))
+
+                const newTableOrder = data.table;
+                const tableStr = page.commands.renderTable(newTableOrder);
+                $('#tr_' + currentTableId).replaceWith(tableStr);
+
+                // page.commands.getAllTable(data.tableId)
+                // page.commands.getOrderDetailsByTableId(data.tableId);
+                page.dialogs.elements.modalProductDetail.modal('hide');
+            })
+
+    }
+
+    page.commands.doUpdateOrder = (currentTableId,productId,quantity,note) => {
+        let obj = {
+            tableId : currentTableId,
+            quantity : quantity,
+            productId : productId,
+            note : note
+        }
+
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'PATCH',
+            url: page.url.updateOrder,
+            data: JSON.stringify(obj)
+        })
+            .done((data) => {
+                console.log("doOrder ========")
+                console.log(data);
+                page.elements.contentItems.empty();
+
+                let totalAmount = data.totalAmount;
+                let items = data.products;
+
+                $.each(items, (index, item) => {
+                    const str = page.commands.renderOrderDetail(item);
+                    page.elements.contentItems.append(str);
+                })
+
+                // page.elements.boardWaiting.addClass('hide');
+                // page.elements.contentItems.removeClass('hide');
+
+                $('#totalAmount').text(totalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}))
+
+                // const newTableOrder = data.table;
+                // const tableStr = page.commands.renderTable(newTableOrder);
+                // $('#tr_' + currentTableId).replaceWith(tableStr);
+
+                // page.commands.getAllTable(data.tableId)
+                // page.commands.getOrderDetailsByTableId(data.tableId);
+                page.dialogs.elements.modalProductDetail.modal('hide');
 
 
+            })
     }
 
     page.commands.showHideSearchDiv = () => {
@@ -414,6 +527,28 @@
             page.commands.getOrderDetailsByTableId(currentTable);
         })
 
+        page.dialogs.elements.btnOrderProduct.on('click' , function() {
+            let productId = $('.idPro').val();
+            let quantity = $('#quantityPro').val();
+            let note = $('#notePro').val();
+            if(tableStatus == "EMPTY"){
+                page.commands.doCreateOrder(currentTable,productId,quantity,note);
+            }
+            else {
+                page.commands.doUpdateOrder(currentTable,productId,quantity,note);
+            }
+        })
+
+        page.dialogs.elements.btnPayment.on('click' , function(){
+            console.log(currentTable)
+                page.commands.getListOrderDetailByTableId(currentTable);
+                page.commands.handleAddEventShowPayment();
+
+
+
+
+        })
+
 
         page.elements.menuPannel.on('click', '.container-product-item', function() {
             const productId = $(this).data('id');
@@ -421,7 +556,7 @@
             page.commands.getProductById(productId).then((data) => {
                 $('#frmProductDetail').empty();
                 let str = `
-                <input type="hidden" value="${productId}">
+                <input class="idPro" type="hidden" value="${data.id}">
                 <div class="col-6 mb-3 text-center">
                     <div class="col-12">
                         <span style="font-size: 24px">${data.title}</span>
@@ -434,7 +569,7 @@
                     <div class="col-12" style="margin-top:28px">
                         <p id="titlePro"  style="font-size: 22px">${data.title}</p>
                         <div class="price">
-                            <p>Giá : <span id="pricePro">${data.price}</span></p>
+                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</span></p>
                         </div>
                         <div class="quantityProductDetail">
                             <p>
@@ -456,15 +591,10 @@
                `;
 
                 $('#frmProductDetail').append(str);
-
                 page.commands.handleAddEventShowProductDetail();
 
-
             });
-
-
         })
-
 
         page.elements.searchProduct.on('change' , function () {
             page.commands.getProductByName();
@@ -474,18 +604,15 @@
             page.commands.showHideSearchDiv();
         })
 
-
         page.elements.tablePannel.on('click', '.tab-content-item', () => {
             page.elements.menuTab.trigger('click');
             page.commands.showHideSearchDiv();
         })
 
-        page.elements.btnShowProductDetailModal.on('click' , () => {
-            page.commands.handleAddEventShowProductDetail();
-        })
     }
 
     $(() => {
+
         page.loadData();
 
         page.initializeControlEvent();

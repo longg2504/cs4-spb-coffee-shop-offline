@@ -1,7 +1,7 @@
 package com.cg.model.dto.tableOrder;
 
 import com.cg.model.TableOrder;
-import com.cg.model.enums.EStatus;
+import com.cg.model.enums.ETableStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,20 +15,20 @@ import lombok.Setter;
 public class TableOrderReqDTO {
 
     private String title;
-    private EStatus status;
+    private ETableStatus status;
 
 
     public TableOrder toTableOrderReqDTO() {
         return new TableOrder()
                 .setTitle(title)
-                .setStatus(EStatus.ROLE_STOCKING);
+                .setStatus(ETableStatus.EMPTY);
     }
 
     public TableOrder toTableOrder(Long tableOrderId) {
         return new TableOrder()
                 .setId(tableOrderId)
                 .setTitle(title)
-                .setStatus(EStatus.ROLE_STOCKING)
+                .setStatus(ETableStatus.EMPTY)
                 ;
     }
 }

@@ -1,6 +1,6 @@
 package com.cg.model.dto.tableOrder;
 
-import com.cg.model.enums.EStatus;
+import com.cg.model.enums.ETableStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +16,5 @@ import lombok.experimental.Accessors;
 public class TableOrderResDTO {
     private Long id;
     private String title;
-    private EStatus status;
+    private ETableStatus status;
 }

@@ -1,7 +1,7 @@
 package com.cg.model;
 import com.cg.model.dto.tableOrder.TableOrderDTO;
 import com.cg.model.dto.tableOrder.TableOrderResDTO;
-import com.cg.model.enums.EStatus;
+import com.cg.model.enums.ETableStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ public class TableOrder extends BaseEntity {
      @Column
     private String title;
      @Enumerated(EnumType.STRING)
-    private EStatus status;
+    private ETableStatus status;
 
 
     public TableOrderDTO toTableOrderDTO() {
@@ -45,7 +45,15 @@ public class TableOrder extends BaseEntity {
         return new TableOrderResDTO()
                 .setId(null)
                 .setTitle(title)
-                .setStatus(EStatus.ROLE_STOCKING)
+                .setStatus(ETableStatus.EMPTY)
+                ;
+    }
+
+    public TableOrderResDTO toTableOrderResDTO() {
+        return new TableOrderResDTO()
+                .setId(id)
+                .setTitle(title)
+                .setStatus(status)
                 ;
     }
 
@@ -53,7 +61,7 @@ public class TableOrder extends BaseEntity {
         return new TableOrderResDTO()
                 .setId(tableOrderId)
                 .setTitle(title)
-                .setStatus(EStatus.ROLE_STOCKING)
+                .setStatus(ETableStatus.EMPTY)
                 ;
     }
 }

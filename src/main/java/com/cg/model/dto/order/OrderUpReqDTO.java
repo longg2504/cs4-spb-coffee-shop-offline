@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class OrderUpReqDTO {
     private Long tableId;
-    private Integer quantity;
+    private Long quantity;
     private Long productId;
     private String note;
 

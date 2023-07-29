@@ -1,8 +1,9 @@
 package com.cg.service.order;
 
+import com.cg.exception.DataInputException;
 import com.cg.model.*;
 import com.cg.model.dto.order.*;
-import com.cg.model.enums.EStatus;
+import com.cg.model.enums.ETableStatus;
 import com.cg.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,16 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private TableOrderRepository tableOrderRepository;
+
     @Autowired
     private StaffRepository staffRepository;
+
     @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
     private ProductRepository productRepository;
+
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
@@ -43,6 +47,11 @@ public class OrderServiceImpl implements IOrderService {
     public Optional<Order> findByTableId(Long tableId) {
         return orderRepository.findByTableId(tableId);
 
+    }
+
+    @Override
+    public List<Order> findByTableOrderAndPaid(TableOrder tableOrder, Boolean paid) {
+        return orderRepository.findByTableOrderAndPaid(tableOrder, paid);
     }
 
     @Override
@@ -221,105 +230,118 @@ public class OrderServiceImpl implements IOrderService {
         order.setTotalAmount(order.getTotalAmount().subtract(orderDetail.getAmount()));
         if (order.getTotalAmount().longValue() == 0l) {
             order.setPaid(true);
-            order.getTableOrder().setStatus(EStatus.ROLE_STOCKING);
+            order.getTableOrder().setStatus(ETableStatus.EMPTY);
         }
         OrderResDTO orderResDTO = order.toOrderResDTO();
         return orderResDTO;
     }
 
     @Override
-    public OrderCreResDTO creOrder(OrderCreReqDTO orderCreReqDTO, User user) {
+    public OrderDetailCreResDTO creOrder(OrderCreReqDTO orderCreReqDTO, TableOrder tableOrder, User user) {
 
         Order order = new Order();
-        TableOrder tableOrder = tableOrderRepository.findById(orderCreReqDTO.getTableId()).get();
         Optional<Staff> optionalStaff = staffRepository.findByUserAndDeletedIsFalse(user);
         order.setStaff(optionalStaff.get());
         order.setTableOrder(tableOrder);
         order.setTotalAmount(BigDecimal.ZERO);
         order.setPaid(false);
-
         orderRepository.save(order);
-        tableOrder.setStatus(EStatus.ROLE_OUT_OF_STOCK);
+
+        tableOrder.setStatus(ETableStatus.BUSY);
         tableOrderRepository.save(tableOrder);
 
-        Product product = productRepository.findById(orderCreReqDTO.getProductId()).get();
+        Product product = productRepository.findById(orderCreReqDTO.getProductId()).orElseThrow(() -> {
+            throw new DataInputException("Sản phẩm không tồn tại");
+        });
 
-        OrderDetail orderDetail = orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(product.getId(), order.getId(), orderCreReqDTO.getNote());
-        if (orderDetail == null) {
-            orderDetail = new OrderDetail();
-            orderDetail.setQuantity(0);
-            orderDetail.setAmount(BigDecimal.ZERO);
-        }
+        OrderDetail orderDetail = new OrderDetail();
 
-        Integer quantityNew = orderCreReqDTO.getQuantity() + orderDetail.getQuantity();
+        Long quantityNew = orderCreReqDTO.getQuantity();
+        BigDecimal price = product.getPrice();
+        BigDecimal amount = price.multiply(BigDecimal.valueOf(quantityNew));
+
         orderDetail.setProduct(product);
+        orderDetail.setPrice(price);
         orderDetail.setQuantity(quantityNew);
+        orderDetail.setAmount(amount);
         orderDetail.setNote(orderCreReqDTO.getNote());
         orderDetail.setOrder(order);
-        BigDecimal amount = new BigDecimal(quantityNew).multiply(product.getPrice());
-        orderDetail.setAmount(amount);
-        orderDetail.setPrice(product.getPrice());
 
         orderDetailRepository.save(orderDetail);
 
-        List<OrderDetail> orderDetails = List.of(orderDetail);
-        order.setOrderDetails(orderDetails);
-        order.setTotalAmount(amount.add(order.getTotalAmount()));
+        order.setTotalAmount(amount);
+        orderRepository.save(order);
 
-        OrderCreResDTO orderCreResDTO = order.toOrderCreResDTO();
-        orderCreResDTO.setQuantity(quantityNew);
-        orderCreResDTO.setProductId(product.getId());
-        orderCreResDTO.setNote(orderDetail.getNote());
-        orderCreResDTO.setUserName(order.getStaff().getTitle());
+        OrderDetailCreResDTO orderDetailCreResDTO = new OrderDetailCreResDTO();
+        orderDetailCreResDTO.setOrderDetailId(orderDetail.getId());
+        orderDetailCreResDTO.setTable(tableOrder.toTableOrderResDTO());
+        orderDetailCreResDTO.setProductId(product.getId());
+        orderDetailCreResDTO.setTitle(product.getTitle());
+        orderDetailCreResDTO.setPrice(price);
+        orderDetailCreResDTO.setQuantity(quantityNew);
+        orderDetailCreResDTO.setAmount(amount);
+        orderDetailCreResDTO.setNote(orderDetail.getNote());
+        orderDetailCreResDTO.setTotalAmount(amount);
+        orderDetailCreResDTO.setAvatar(product.getProductAvatar().toProductAvatarDTO());
 
-        return orderCreResDTO;
+        return orderDetailCreResDTO;
     }
 
     @Override
-    public OrderUpResDTO upOrderDetail(OrderUpReqDTO orderUpReqDTO, TableOrder tableOrder, User user) {
-//        tableOrder = tableOrderRepository.findById(orderUpReqDTO.getTableId()).get();
-        Order order = orderRepository.findByTableId(tableOrder.getId()).get();
+    public OrderDetailUpResDTO upOrderDetail(OrderUpReqDTO orderUpReqDTO, Order order, Product product, User user) {
 
-        Product product = productRepository.findById(orderUpReqDTO.getProductId()).get();
+        List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrder(order);
         OrderDetail orderDetail = new OrderDetail();
-        List<OrderDetail> orderDetails = orderDetailRepository.findListOrderDetailByOrderId(order.getId());
 
-        for (OrderDetail item : orderDetails) {
-
-            if (item.getProduct().getId().equals(orderUpReqDTO.getProductId()) && item.getNote().equals(orderUpReqDTO.getNote())) {
-                item.setQuantity(item.getQuantity() + orderUpReqDTO.getQuantity());
-                BigDecimal amountNew = item.getPrice().multiply(BigDecimal.valueOf(orderUpReqDTO.getQuantity()));
-                BigDecimal amount = new BigDecimal(item.getQuantity()).multiply(item.getPrice());
-                item.setAmount(amount);
-                orderDetailRepository.save(item);
-                order.setTotalAmount(order.getTotalAmount().add(amountNew));
-                orderRepository.save(order);
-                OrderUpResDTO orderUpResDTO = order.toOrderUpResDTO();
-                orderUpResDTO.setQuantity(item.getQuantity());
-                orderUpResDTO.setNote(item.getNote());
-                orderUpResDTO.setProductId(product.getId());
-                orderUpResDTO.setUserName(order.getStaff().getTitle());
-                return orderUpResDTO;
-            }
+        if (orderDetails.size() == 0) {
+            throw new DataInputException("Hoá đơn bàn này chưa có mặt hàng nào, vui lòng liên hệ ADMIN để kiểm tra lại dữ liệu");
         }
-        orderDetail.setProduct(product);
-        orderDetail.setQuantity(orderUpReqDTO.getQuantity());
-        orderDetail.setNote(orderUpReqDTO.getNote());
-        orderDetail.setPrice(product.getPrice());
-        orderDetail.setOrder(order);
 
-        BigDecimal amount = new BigDecimal(orderUpReqDTO.getQuantity()).multiply(product.getPrice());
-        orderDetail.setAmount(amount);
-        orderDetailRepository.save(orderDetail);
+        Optional<OrderDetail> orderDetailOptional = orderDetailRepository.findByProductIdAndOrderIdAndNote(orderUpReqDTO.getProductId(), order.getId(), orderUpReqDTO.getNote());
 
-        order.setTotalAmount(order.getTotalAmount().add(amount));
-        orderRepository.save(order);
-        OrderUpResDTO orderUpResDTO = order.toOrderUpResDTO();
-        orderUpResDTO.setQuantity(orderDetail.getQuantity());
-        orderUpResDTO.setNote(orderDetail.getNote());
-        orderUpResDTO.setProductId(product.getId());
-        orderUpResDTO.setUserName(order.getStaff().getTitle());
-        return orderUpResDTO;
+        if (orderDetailOptional.isEmpty()) {
+            Long quantity = orderUpReqDTO.getQuantity();
+            BigDecimal price = product.getPrice();
+            BigDecimal amount = price.multiply(BigDecimal.valueOf(quantity));
+
+            orderDetail.setProduct(product);
+            orderDetail.setOrder(order);
+            orderDetail.setPrice(product.getPrice());
+            orderDetail.setQuantity(quantity);
+            orderDetail.setAmount(amount);
+            orderDetail.setNote(orderUpReqDTO.getNote());
+            orderDetailRepository.save(orderDetail);
+
+            BigDecimal newTotalAmount = getOrderTotalAmount(order.getId());
+            order.setTotalAmount(newTotalAmount);
+            orderRepository.save(order);
+        }
+        else {
+            orderDetail = orderDetailOptional.get();
+            long newQuantity = orderDetail.getQuantity() + orderUpReqDTO.getQuantity();
+            BigDecimal price = orderDetail.getPrice();
+            BigDecimal newAmount = price.multiply(BigDecimal.valueOf(newQuantity));
+            orderDetail.setQuantity(newQuantity);
+            orderDetail.setAmount(newAmount);
+            orderDetailRepository.save(orderDetail);
+
+            BigDecimal newTotalAmount = getOrderTotalAmount(order.getId());
+            order.setTotalAmount(newTotalAmount);
+            orderRepository.save(order);
+        }
+
+        List<OrderDetailProductUpResDTO> newOrderDetails = orderDetailRepository.findAllOrderDetailProductUpResDTO(order.getId());
+
+        OrderDetailUpResDTO orderDetailUpResDTO = new OrderDetailUpResDTO();
+        orderDetailUpResDTO.setTable(order.getTableOrder().toTableOrderResDTO());
+        orderDetailUpResDTO.setProducts(newOrderDetails);
+        orderDetailUpResDTO.setTotalAmount(order.getTotalAmount());
+
+        return orderDetailUpResDTO;
+    }
+
+    public BigDecimal getOrderTotalAmount(Long orderId) {
+        return orderRepository.getOrderTotalAmount(orderId);
     }
 
 
