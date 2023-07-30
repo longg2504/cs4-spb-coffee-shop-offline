@@ -35,7 +35,15 @@ public class CategoryAPI {
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<?> getById(@PathVariable Long categoryId){
+    public ResponseEntity<?> getById(@PathVariable("categoryId") String categoryIdStr){
+
+        if (!validateUtils.isNumberValid(categoryIdStr)) {
+            Map<String, String> data = new HashMap<>();
+            data.put("message", "Mã danh mục không hợp lệ");
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        }
+        Long categoryId = Long.parseLong(categoryIdStr);
+
         Category category = categoryService.findById(categoryId).orElseThrow(() -> {
             throw new DataInputException("Mã danh mục không tồn tại");
         });
@@ -80,7 +88,7 @@ public class CategoryAPI {
         }
         Long categoryId = Long.parseLong(categoryIdStr);
         Category category = categoryService.findById(categoryId).orElseThrow(() -> {
-           throw new DataInputException("Mã mục không tồn tại ");
+           throw new DataInputException("Mã danh mục không tồn tại ");
         });
         categoryService.deleteByIdTrue(category);
         return new ResponseEntity<>(HttpStatus.OK);

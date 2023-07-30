@@ -11,6 +11,7 @@ import com.cg.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -38,20 +39,30 @@ public class TableOrderAPI {
     }
 
     @GetMapping("/{tableId}")
-    public ResponseEntity<?> getById(@PathVariable Long tableId){
+    public ResponseEntity<?> getById(@PathVariable("tableId") String tableIdStr){
+
+        if (!validateUtils.isNumberValid(tableIdStr)) {
+            throw new DataInputException("Mã bàn không hợp lệ");
+        }
+        Long tableId = Long.parseLong(tableIdStr);
+
         Optional<TableOrder> tableOrderOptional = tableOrderService.findById(tableId);
 
         if(tableOrderOptional.isEmpty()){
-
             Map<String,String> data = new HashMap<>();
-            data.put("message" , "Khách hàng không tồn tại");
+            data.put("message" , "Bàn không tồn tại");
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(tableOrderOptional.get(), HttpStatus.OK);
     }
 
     @GetMapping("/tables-without-tableSend/{tableId}")
-    public ResponseEntity<?> getAllTablesWithoutSender(@PathVariable Long tableId) {
+    public ResponseEntity<?> getAllTablesWithoutSender(@PathVariable("tableId") String tableIdStr) {
+
+        if (!validateUtils.isNumberValid(tableIdStr)) {
+            throw new DataInputException("Mã bàn không hợp lệ");
+        }
+        Long tableId = Long.parseLong(tableIdStr);
 
         List<TableOrderDTO> tableSelect = tableOrderService.findAllTablesWithoutSenderId(tableId);
 
@@ -59,7 +70,12 @@ public class TableOrderAPI {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTable(@RequestBody TableOrderReqDTO tableOrderReqDTO){
+    public ResponseEntity<?> createTable(@RequestBody TableOrderReqDTO tableOrderReqDTO, BindingResult bindingResult){
+
+        new TableOrderReqDTO().validate(tableOrderReqDTO,bindingResult);
+        if (bindingResult.hasFieldErrors()){
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         TableOrderResDTO tableOrderResDTO = tableOrderService.createTableOrder(tableOrderReqDTO);
 
@@ -67,15 +83,21 @@ public class TableOrderAPI {
     }
 
     @PatchMapping("/{orderTableId}")
-    public ResponseEntity<?> update(@PathVariable("orderTableId") String orderTableIdStr,@RequestBody TableOrderReqDTO tableOrderReqDTO){
+    public ResponseEntity<?> update(@PathVariable("orderTableId") String orderTableIdStr,@RequestBody TableOrderReqDTO tableOrderReqDTO, BindingResult bindingResult){
+
+        new TableOrderReqDTO().validate(tableOrderReqDTO,bindingResult);
+        if (bindingResult.hasFieldErrors()){
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
         if (!validateUtils.isNumberValid(orderTableIdStr)) {
             Map<String, String> data = new HashMap<>();
-            data.put("message", "Mã danh mục không hợp lệ");
+            data.put("message", "Mã bàn không hợp lệ");
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
         Long orderTableId = Long.parseLong(orderTableIdStr);
         tableOrderService.findById(orderTableId).orElseThrow(() -> {
-           throw new DataInputException("Mã danh mục không tồn tại");
+           throw new DataInputException("Mã bàn không tồn tại");
         });
 
         TableOrderResDTO tableOrderResDTO = tableOrderService.updateTableOrder(orderTableId,tableOrderReqDTO);

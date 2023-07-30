@@ -16,6 +16,7 @@ import com.cg.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -49,7 +50,6 @@ public class OrderAPI {
     private AppUtils appUtils;
 
 
-
     @GetMapping("/table/{tableId}")
     public ResponseEntity<?> getOrderByTableId(@PathVariable("tableId") String tableIdStr) {
         if (!validateUtils.isNumberValid(tableIdStr)) {
@@ -73,7 +73,7 @@ public class OrderAPI {
     }
 
     @GetMapping("/list-order-details/{tableId}")
-    public ResponseEntity<?> getListOrderDetailByTableId(@PathVariable("tableId") String tableIdStr){
+    public ResponseEntity<?> getListOrderDetailByTableId(@PathVariable("tableId") String tableIdStr) {
         if (!validateUtils.isNumberValid(tableIdStr)) {
             throw new DataInputException("Mã bàn không hợp lệ");
         }
@@ -100,7 +100,7 @@ public class OrderAPI {
     public ResponseEntity<?> deleteOrder(OrderReqDTO orderReqDTO) {
         Long tableId = Long.valueOf(orderReqDTO.getTableOrder().getId());
         TableOrder tableOrder = tableOrderService.findById(tableId).get();
-        if(tableOrder.getStatus() == ETableStatus.EMPTY) {
+        if (tableOrder.getStatus() == ETableStatus.EMPTY) {
             throw new DataInputException("Bàn không có sản phẩm nào");
         } else {
             OrderResDTO orderResDTO = orderService.deleteByIdOrder(orderReqDTO, tableOrder);
@@ -109,13 +109,19 @@ public class OrderAPI {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> creOrder(@RequestBody  OrderCreReqDTO orderCreReqDTO){
+    public ResponseEntity<?> creOrder(@RequestBody OrderCreReqDTO orderCreReqDTO, BindingResult bindingResult) {
         String username = appUtils.getPrincipalUsername();
         Optional<User> userOptional = userService.findByName(username);
 
-        TableOrder tableOrder = tableOrderService.findById(orderCreReqDTO.getTableId()).orElseThrow(() -> {
+        new OrderCreReqDTO().validate(orderCreReqDTO, bindingResult);
+        if (bindingResult.hasFieldErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
+        TableOrder tableOrder = tableOrderService.findById(Long.valueOf(orderCreReqDTO.getTableId())).orElseThrow(() -> {
             throw new DataInputException("Bàn không tồn tại");
         });
+
 
         List<Order> orders = orderService.findByTableOrderAndPaid(tableOrder, false);
 
@@ -131,16 +137,22 @@ public class OrderAPI {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @PatchMapping("/update")
-    public ResponseEntity<?> upOrder(@RequestBody OrderUpReqDTO orderUpReqDTO){
+    public ResponseEntity<?> upOrder(@RequestBody OrderUpReqDTO orderUpReqDTO,BindingResult bindingResult) {
         String username = appUtils.getPrincipalUsername();
         Optional<User> userOptional = userService.findByName(username);
 
-        TableOrder tableOrder = tableOrderService.findById(orderUpReqDTO.getTableId()).orElseThrow(() -> {
+         new OrderUpReqDTO().validate(orderUpReqDTO, bindingResult);
+        if (bindingResult.hasFieldErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
+        TableOrder tableOrder = tableOrderService.findById(Long.valueOf(orderUpReqDTO.getTableId())).orElseThrow(() -> {
             throw new DataInputException("Bàn không tồn tại");
         });
 
-        Product product = productService.findById(orderUpReqDTO.getProductId()).orElseThrow(() -> {
+        Product product = productService.findById(Long.valueOf(orderUpReqDTO.getProductId())).orElseThrow(() -> {
             throw new DataInputException("Sản phẩm không tồn tại");
         });
 
@@ -156,22 +168,28 @@ public class OrderAPI {
 
         Order order = orders.get(0);
 
-        if (tableOrder.getStatus() == ETableStatus.BUSY){
+        if (tableOrder.getStatus() == ETableStatus.BUSY) {
             OrderDetailUpResDTO orderDetailUpResDTO = orderService.upOrderDetail(orderUpReqDTO, order, product, userOptional.get());
-            return new ResponseEntity<>(orderDetailUpResDTO ,HttpStatus.OK);
+            return new ResponseEntity<>(orderDetailUpResDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/update/change-to-table")
-    public ResponseEntity<?> changeToTable(@RequestBody OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO) {
+    public ResponseEntity<?> changeToTable(@RequestBody OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO, BindingResult bindingResult) {
         String username = appUtils.getPrincipalUsername();
         Optional<User> userOptional = userService.findByName(username);
 
-        TableOrder tableOrderBusy = tableOrderService.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).orElseThrow(() -> {
+         new OrderUpChangeToTableReqDTO().validate(orderUpChangeToTableReqDTO, bindingResult);
+        if (bindingResult.hasFieldErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
+
+        TableOrder tableOrderBusy = tableOrderService.findById(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdBusy())).orElseThrow(() -> {
             throw new DataInputException("Bàn không tồn tại");
         });
-        TableOrder tableOrderEmpty = tableOrderService.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).orElseThrow(() -> {
+        TableOrder tableOrderEmpty = tableOrderService.findById(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdBusy())).orElseThrow(() -> {
             throw new DataInputException("Bàn không tồn tại");
         });
 
@@ -198,7 +216,7 @@ public class OrderAPI {
     }
 
     @GetMapping("/get-username")
-    public ResponseEntity<?> getUserName(){
+    public ResponseEntity<?> getUserName() {
         String username = appUtils.getPrincipalUsername();
         Optional<User> optionalUser = userService.findByName(username);
 
@@ -207,10 +225,8 @@ public class OrderAPI {
         Long name = optionalUser.get().getId();
 
 
-
-        return new ResponseEntity<>(name,HttpStatus.OK);
+        return new ResponseEntity<>(name, HttpStatus.OK);
     }
-
 
 
 }

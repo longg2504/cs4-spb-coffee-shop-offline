@@ -14,8 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderUpChangeToTableResDTO {
-    private TableOrderResDTO table;
-    private BigDecimal totalAmount;
-    private List<OrderDetailProductUpResDTO> products;
+    private TableOrderResDTO tableSend;     // EMPTY
+    private TableOrderResDTO tableReceive;  // BUSY
 
 }

@@ -65,7 +65,13 @@ public class ProductAPI {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<?> getById(@PathVariable Long productId) {
+    public ResponseEntity<?> getById(@PathVariable("productId") String productIdStr) {
+
+        if (!validateUtils.isNumberValid(productIdStr)) {
+            throw new DataInputException("Mã bàn không hợp lệ");
+        }
+        Long productId = Long.valueOf(productIdStr);
+
         Product product = productService.findById(productId).orElseThrow(() -> {
             throw new DataInputException("Mã sản phẩm không tồn tại");
         });

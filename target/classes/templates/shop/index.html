@@ -57,11 +57,11 @@
                         </div>
                         <div>
 
-                        <div class="tab-pane fade hide" id="menu-pannel" role="tabpanel" aria-labelledby="menu-tab"
-                             tabindex="0">
+                            <div class="tab-pane fade hide" id="menu-pannel" role="tabpanel" aria-labelledby="menu-tab"
+                                 tabindex="0">
 
 
-                        </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -126,23 +126,21 @@
 <script src="/assets/js/app.js"></script>
 
 
-
-
-
 <script>
     const page = {
         url: {
             getALLTabOrders: App.API_TABLE_ORDER,
-            getAllTableSelect:App.API_TABLE_ORDER + '/tables-without-tableSend',
+            getAllTableSelect: App.API_TABLE_ORDER + '/tables-without-tableSend',
             getTableById: App.API_TABLE_ORDER,
             getAllProducts: App.API_PRODUCT,
             getProductById: App.API_PRODUCT,
             getOrderDetailsByTableId: App.API_ORDER_BY_TABLE_ID,
-            getOrderByTableId : App.API_ORDER_BY_TABLE_ID,
-            getProductByName:App.API_PRODUCT_SEARCH_NAME,
+            getOrderByTableId: App.API_ORDER_BY_TABLE_ID,
+            getProductByName: App.API_PRODUCT_SEARCH_NAME,
             createOrder: App.API_ORDER + '/create',
             updateOrder: App.API_ORDER + '/update',
-            payBillOrder : App.API_BILL
+            payBillOrder: App.API_BILL,
+            changToTable: App.API_ORDER + '/update/change-to-table'
         },
         elements: {},
         loadData: {},
@@ -191,11 +189,9 @@
     page.dialogs.elements.modalChangToTable = $('#modalChangeToTable')
     page.dialogs.elements.tableSend = $('#tableSend');
     page.dialogs.elements.tableSelect = $('#tableSelect');
+    page.dialogs.elements.btnChangeToTable = $('#btnChangeToTable');
 
     page.elements.searchProduct = $('#searchProduct');
-
-
-
 
 
     let tableStatus = 'EMPTY';
@@ -289,7 +285,7 @@
 
     page.commands.renderTableSelect = (tableOrder) => {
         return `
-                <option value="${tableOrder.id}">(${tableOrder.id}) ${tableOrder.title}</option>
+                <option value="${tableOrder.id}">${tableOrder.title}</option>
             `;
     }
 
@@ -299,13 +295,13 @@
             url: page.url.getALLTabOrders
         })
             .done((data) => {
-                    page.elements.tablePannel.empty();
-                    data.forEach(item => {
-                        tableOrder = item;
-                        let str = page.commands.renderTable(tableOrder)
-                        page.elements.tablePannel.prepend(str)
+                page.elements.tablePannel.empty();
+                data.forEach(item => {
+                    tableOrder = item;
+                    let str = page.commands.renderTable(tableOrder)
+                    page.elements.tablePannel.prepend(str)
 
-                    })
+                })
 
             })
     }
@@ -323,7 +319,9 @@
             url: page.url.getAllTableSelect + '/' + TableSelectId
         })
             .done((data) => {
-                page.dialogs.elements.renderTableSelect.empty();
+
+                console.log(data)
+                page.dialogs.elements.tableSelect.empty();
 
                 $.each(data, (index, item) => {
                     const str = page.commands.renderTableSelect(item);
@@ -334,7 +332,6 @@
                 console.log(jqXHR)
             })
     }
-
 
 
     page.commands.getAllProduct = () => {
@@ -361,41 +358,47 @@
     }
 
     page.commands.getListOrderDetailByTableId = (tableId) => {
-       $.ajax({
-           type: 'GET',
-           url: page.url.getOrderDetailsByTableId + '/list-order-details' +tableId
-       })
-           .done((data) => {
-               if(data && data.length > 0) {
-                   let totalAmount = 0;
-                   page.elements.tbOrderItemsBody.empty();
+        $.ajax({
+            type: 'GET',
+            url: page.url.getOrderDetailsByTableId + '/list-order-details' + tableId
+        })
+            .done((data) => {
+                if (data && data.length > 0) {
+                    let totalAmount = 0;
+                    page.elements.tbOrderItemsBody.empty();
 
-                   $.each(data, (index,item) => {
-                       totalAmount += item.amount;
+                    $.each(data, (index, item) => {
+                        totalAmount += item.amount;
 
-                       let str = `
+                        let str = `
                         <tr>
                             <td class="text-center">${item.title}</td>
                             <td class="text-center">${item.quantity}</td>
                             <td class="text-center">${item.note}</td>
-                            <td class="text-center">${item.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</td>
-                            <td class="text-center">${item.amount.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</td>
+                            <td class="text-center">${item.price.toLocaleString('vi', {
+                            style: 'currency',
+                            currency: 'VND'
+                        })}</td>
+                            <td class="text-center">${item.amount.toLocaleString('vi', {
+                            style: 'currency',
+                            currency: 'VND'
+                        })}</td>
 
                         </tr>
 
                 `
-                       page.elements.tbOrderItemsBody.append(str);
-                   })
+                        page.elements.tbOrderItemsBody.append(str);
+                    })
 
-               }
-           })
-           .fail((jqXHR) => {
-               console.log(jqXHR);
-           })
+                }
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR);
+            })
     }
 
     page.commands.getOrderDetailsByTableId = (tableId) => {
-       return $.ajax({
+        return $.ajax({
             type: 'GET',
             url: page.url.getOrderDetailsByTableId + '/' + tableId
         })
@@ -430,8 +433,7 @@
 
                     page.elements.boardWaiting.addClass('hide');
                     page.elements.contentItems.removeClass('hide');
-                }
-                else {
+                } else {
                     page.elements.boardWaiting.removeClass('hide');
                     page.elements.contentItems.addClass('hide');
 
@@ -444,7 +446,7 @@
             })
     }
 
-    page.commands.getProductByName = () =>  {
+    page.commands.getProductByName = () => {
         let searchProduct = page.elements.searchProduct.val();
         page.elements.menuPannel.empty();
         if (searchProduct == "") {
@@ -459,11 +461,10 @@
                         page.elements.menuPannel.prepend(str);
                     })
                 })
-        }
-        else{
+        } else {
             $.ajax({
                 type: 'GET',
-                url: page.url.getProductByName + "/" +searchProduct
+                url: page.url.getProductByName + "/" + searchProduct
             })
                 .done((data) => {
                     data.forEach(item => {
@@ -487,7 +488,7 @@
     page.commands.handAddEventShowChangeToTable = () => {
         console.log("currentTable", currentTable)
         page.commands.getTableById(currentTable).then((data) => {
-            if(data !== {}){
+            if (data !== {}) {
                 page.dialogs.elements.tableSend.val(data.title);
                 page.commands.getAllTableSelect(currentTable);
                 page.dialogs.elements.modalChangToTable.modal('show');
@@ -500,13 +501,12 @@
     }
 
 
-
-    page.commands.doCreateOrder = (currentTableId,productId,quantity,note) => {
+    page.commands.doCreateOrder = (currentTableId, productId, quantity, note) => {
         let obj = {
-            tableId : currentTableId,
-            quantity : quantity,
-            productId : productId,
-            note : note
+            tableId: currentTableId,
+            quantity: quantity,
+            productId: productId,
+            note: note
         }
 
         $.ajax({
@@ -545,12 +545,12 @@
 
     }
 
-    page.commands.doUpdateOrder = (currentTableId,productId,quantity,note) => {
+    page.commands.doUpdateOrder = (currentTableId, productId, quantity, note) => {
         let obj = {
-            tableId : currentTableId,
-            quantity : quantity,
-            productId : productId,
-            note : note
+            tableId: currentTableId,
+            quantity: quantity,
+            productId: productId,
+            note: note
         }
 
         $.ajax({
@@ -586,14 +586,12 @@
                 // page.commands.getOrderDetailsByTableId(data.tableId);
                 App.SweetAlert.showSuccessAlert("Thêm món thành công");
                 page.dialogs.elements.modalProductDetail.modal('hide');
-
-
             })
     }
 
     page.commands.doPaymentOrder = (currentTableId) => {
         let obj = {
-            tableId : currentTableId
+            tableId: currentTableId
         }
         $.ajax({
             headers: {
@@ -601,7 +599,7 @@
                 'content-type': 'application/json'
             },
             type: 'POST',
-            url: page.url.payBillOrder + '/' +currentTableId ,
+            url: page.url.payBillOrder + '/' + currentTableId,
             data: JSON.stringify(obj)
         })
             .done((data) => {
@@ -630,16 +628,53 @@
 
 
             })
-            .fail(() =>{
+            .fail(() => {
 
             })
     }
 
-    page.commands.showHideSearchDiv = () => {
-        if (page.elements.menuPannel.hasClass('active','show')) {
-            page.elements.divSearchProduct.removeClass('hide');
+    page.commands.doChangeToTable = (currentTable) => {
+        const tableIdBusy = currentTable;
+        const tableIdEmpty = page.dialogs.elements.tableSelect.val();
+
+        let obj = {
+            tableIdEmpty,
+            tableIdBusy
         }
-        else {
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'PATCH',
+            url: page.url.changToTable,
+            data: JSON.stringify(obj)
+        })
+            .done((data) => {
+
+
+                const senderTable = data.tableReceive;
+                const receiveTable = data.tableSend;
+
+                const senderTableStr = page.commands.getAllTable(senderTable);
+                $('#tr_' + senderTable.id).replaceWith(senderTableStr);
+
+                const receiveTableStr = page.commands.getAllTable(receiveTable);
+                $('#tr_' + receiveTable.id).replaceWith(receiveTableStr);
+
+                page.dialogs.elements.modalChangToTable.modal('hide');
+                App.showSuccessAlert('Chuyển bàn thành công');
+            })
+
+
+
+    }
+
+
+    page.commands.showHideSearchDiv = () => {
+        if (page.elements.menuPannel.hasClass('active', 'show')) {
+            page.elements.divSearchProduct.removeClass('hide');
+        } else {
             page.elements.divSearchProduct.addClass('hide');
         }
     }
@@ -658,28 +693,26 @@
         })
 
 
-        page.elements.tablePannel.on('click', '.container-tab-item', function() {
+        page.elements.tablePannel.on('click', '.container-tab-item', function () {
             currentTable = $(this).data('id');
             tableStatus = $(this).data('status');
             page.elements.tableCurrent.find('span').text('Bàn ' + currentTable);
             page.commands.getOrderDetailsByTableId(currentTable);
         })
 
-        page.dialogs.elements.btnOrderProduct.on('click' , function() {
+        page.dialogs.elements.btnOrderProduct.on('click', function () {
             let productId = $('.idPro').val();
             let quantity = $('#quantityPro').val();
             let note = $('#notePro').val();
-            if(tableStatus == "EMPTY"){
-                page.commands.doCreateOrder(currentTable,productId,quantity,note);
-            }
-            else {
-                page.commands.doUpdateOrder(currentTable,productId,quantity,note);
+            if (tableStatus == "EMPTY") {
+                page.commands.doCreateOrder(currentTable, productId, quantity, note);
+            } else {
+                page.commands.doUpdateOrder(currentTable, productId, quantity, note);
             }
         })
 
 
-
-        page.dialogs.elements.btnPayment.on('click' , function(){
+        page.dialogs.elements.btnPayment.on('click', function () {
             $('#tableId').empty();
             let str = `
                 <span>Chi tiết hoá đơn bàn ${currentTable}</span>
@@ -689,19 +722,22 @@
             $('#tableId').append(str);
         })
 
-        page.dialogs.elements.btnPaymentOrder.on('click', function(){
+        page.dialogs.elements.btnPaymentOrder.on('click', function () {
             page.commands.doPaymentOrder(currentTable);
 
         })
 
-        page.elements.tablePannel.on('click','.showModalTable' ,function(){
+        page.dialogs.elements.btnChangeToTable.on('click', function () {
+            page.commands.doChangeToTable(currentTable)
+        })
+
+        page.elements.tablePannel.on('click', '.showModalTable', function () {
             currentTable = $(this).parent().parent().data('id');
             page.commands.handAddEventShowChangeToTable(currentTable);
         })
 
 
-
-        page.elements.menuPannel.on('click', '.container-product-item', function() {
+        page.elements.menuPannel.on('click', '.container-product-item', function () {
             const productId = $(this).data('id');
 
             page.commands.getProductById(productId).then((data) => {
@@ -720,7 +756,10 @@
                     <div class="col-12" style="margin-top:28px">
                         <p id="titlePro"  style="font-size: 22px">${data.title}</p>
                         <div class="price">
-                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</span></p>
+                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {
+                    style: 'currency',
+                    currency: 'VND'
+                })}</span></p>
                         </div>
                         <div class="quantityProductDetail">
                             <p>
@@ -747,7 +786,7 @@
             });
         })
 
-        page.elements.searchProduct.on('change' , function () {
+        page.elements.searchProduct.on('change', function () {
             page.commands.getProductByName();
         })
 

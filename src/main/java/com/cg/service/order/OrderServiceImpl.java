@@ -250,13 +250,13 @@ public class OrderServiceImpl implements IOrderService {
         tableOrder.setStatus(ETableStatus.BUSY);
         tableOrderRepository.save(tableOrder);
 
-        Product product = productRepository.findById(orderCreReqDTO.getProductId()).orElseThrow(() -> {
+        Product product = productRepository.findById(Long.valueOf(orderCreReqDTO.getProductId())).orElseThrow(() -> {
             throw new DataInputException("Sản phẩm không tồn tại");
         });
 
         OrderDetail orderDetail = new OrderDetail();
 
-        Long quantityNew = orderCreReqDTO.getQuantity();
+        Long quantityNew = Long.valueOf(orderCreReqDTO.getQuantity());
         BigDecimal price = product.getPrice();
         BigDecimal amount = price.multiply(BigDecimal.valueOf(quantityNew));
 
@@ -297,10 +297,10 @@ public class OrderServiceImpl implements IOrderService {
             throw new DataInputException("Hoá đơn bàn này chưa có mặt hàng nào, vui lòng liên hệ ADMIN để kiểm tra lại dữ liệu");
         }
 
-        Optional<OrderDetail> orderDetailOptional = orderDetailRepository.findByProductIdAndOrderIdAndNote(orderUpReqDTO.getProductId(), order.getId(), orderUpReqDTO.getNote());
+        Optional<OrderDetail> orderDetailOptional = orderDetailRepository.findByProductIdAndOrderIdAndNote(Long.valueOf(orderUpReqDTO.getProductId()), order.getId(), orderUpReqDTO.getNote());
 
         if (orderDetailOptional.isEmpty()) {
-            Long quantity = orderUpReqDTO.getQuantity();
+            Long quantity = Long.valueOf(orderUpReqDTO.getQuantity());
             BigDecimal price = product.getPrice();
             BigDecimal amount = price.multiply(BigDecimal.valueOf(quantity));
 
@@ -318,7 +318,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         else {
             orderDetail = orderDetailOptional.get();
-            long newQuantity = orderDetail.getQuantity() + orderUpReqDTO.getQuantity();
+            long newQuantity = orderDetail.getQuantity() + Long.parseLong(orderUpReqDTO.getQuantity());
             BigDecimal price = orderDetail.getPrice();
             BigDecimal newAmount = price.multiply(BigDecimal.valueOf(newQuantity));
             orderDetail.setQuantity(newQuantity);
@@ -343,25 +343,24 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderUpChangeToTableResDTO changeToTable(OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO, User user) {
 
-        Order orderBusy = orderRepository.findByTableId(orderUpChangeToTableReqDTO.getTableIdBusy()).get();
+        Order orderBusy = orderRepository.findByTableId(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdBusy())).get();
 
-        TableOrder emptyTable = tableOrderRepository.findById(orderUpChangeToTableReqDTO.getTableIdEmpty()).get();
+        TableOrder emptyTable = tableOrderRepository.findById(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdEmpty())).get();
         emptyTable.setStatus(ETableStatus.BUSY);
         tableOrderRepository.save(emptyTable);
 
         orderBusy.setTableOrder(emptyTable);
         orderRepository.save(orderBusy);
 
-        TableOrder busyTable = tableOrderRepository.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).get();
+        TableOrder busyTable = tableOrderRepository.findById(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdBusy())).get();
         busyTable.setStatus(ETableStatus.EMPTY);
         tableOrderRepository.save(busyTable);
 
-        List<OrderDetailProductUpResDTO> newOrderDetails = orderDetailRepository.findAllOrderDetailProductUpResDTO(orderBusy.getId());
+//        List<OrderDetailProductUpResDTO> newOrderDetails = orderDetailRepository.findAllOrderDetailProductUpResDTO(orderBusy.getId());
 
         OrderUpChangeToTableResDTO orderUpChangeToTableResDTO = new OrderUpChangeToTableResDTO();
-        orderUpChangeToTableResDTO.setTable(orderBusy.getTableOrder().toTableOrderResDTO());
-        orderUpChangeToTableResDTO.setTotalAmount(orderBusy.getTotalAmount());
-        orderUpChangeToTableResDTO.setProducts(newOrderDetails);
+        orderUpChangeToTableResDTO.setTableSend(busyTable.toTableOrderResDTO());
+        orderUpChangeToTableResDTO.setTableReceive(emptyTable.toTableOrderResDTO());
 
 
         return orderUpChangeToTableResDTO;
