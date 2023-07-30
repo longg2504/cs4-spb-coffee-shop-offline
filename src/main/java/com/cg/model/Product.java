@@ -39,7 +39,6 @@ public class Product extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "product")
-    @JsonIgnore
     private List<OrderDetail> orderDetails;
 
      @OneToOne
@@ -60,7 +59,7 @@ public class Product extends BaseEntity {
 
     public ProductDTO toProductDTO() {
          return new ProductDTO()
-                 .setId(id)
+                 .setId(String.valueOf(id))
                  .setTitle(title)
                  .setPrice(price)
                  .setUnit(unit)

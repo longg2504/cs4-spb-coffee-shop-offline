@@ -1,7 +1,6 @@
 package com.cg.service.orderDetail;
 
 import com.cg.model.OrderDetail;
-import com.cg.model.dto.order.OrderResDTO;
 import com.cg.model.dto.orderDetail.OrderDetailByTableResDTO;
 import com.cg.repository.OrderDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService{
 
     @Override
     public List<OrderDetailByTableResDTO> getOrderDetailByTableResDTO(Long orderId) {
+
         return orderDetailRepository.getOrderDetailByTableResDTO(orderId);
     }
 
@@ -48,7 +48,14 @@ public class OrderDetailServiceImpl implements IOrderDetailService{
 
 
     @Override
-    public OrderDetail findByOrderDetailByIdProductAndIdOrder(Long idProduct,Long idOrder, String note) {
-        return orderDetailRepository.findByOrderDetailByIdProductAndIdOrder(idProduct,idOrder, note);
+    public Optional<OrderDetail> findByOrderDetailByIdProductAndIdOrder(Long idProduct, Long idOrder, String note) {
+        return orderDetailRepository.findByProductIdAndOrderIdAndNote(idProduct, idOrder, note);
     }
+
+    @Override
+    public OrderDetail findByOrderId(Long orderId) {
+        return orderDetailRepository.findByOrderId(orderId);
+    }
+
+
 }

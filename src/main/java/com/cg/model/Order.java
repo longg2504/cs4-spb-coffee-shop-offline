@@ -1,14 +1,13 @@
 package com.cg.model;
 
 
-import com.cg.model.dto.order.OrderResDTO;
+import com.cg.model.dto.order.*;
 import com.cg.model.dto.orderDetail.OrderDetailDTO;
-import com.cg.model.dto.staff.StaffDTO;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -21,6 +20,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "orders")
+@Accessors(chain = true)
 public class Order extends BaseEntity {
 
     @Id
@@ -39,7 +39,6 @@ public class Order extends BaseEntity {
     private BigDecimal totalAmount;
 
     @OneToMany(mappedBy = "order")
-    @JsonIgnore
     private List<OrderDetail> orderDetails;
 
     private Boolean paid;
@@ -57,6 +56,29 @@ public class Order extends BaseEntity {
                 .setStaff(staff.toStaffDTO())
                 .setTableOrder(tableOrder.toTableOrderDTO())
                 .setOrderDetails(orderDetailDTOS)
+                .setPaid(paid)
                 ;
     }
+
+
+    public OrderDTO toOrderDTO() {
+        return new OrderDTO()
+                .setId(id)
+                .setTotalAmount(totalAmount)
+                ;
+    }
+
+    public OrderCreResDTO toOrderCreResDTO() {
+        return new OrderCreResDTO()
+                .setTableId(tableOrder.getId())
+                ;
+    }
+
+    public OrderUpResDTO toOrderUpResDTO() {
+        return new OrderUpResDTO()
+                .setTableId(tableOrder.getId())
+                ;
+    }
+
+
 }

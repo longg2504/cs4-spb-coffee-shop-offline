@@ -1,6 +1,7 @@
 package com.cg.service.staff;
 
 import com.cg.model.Staff;
+import com.cg.model.User;
 import com.cg.repository.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,11 @@ public class StaffServiceImpl implements IStaffService{
     @Override
     public void deleteById(Long id) {
 
+    }
+
+
+    @Override
+    public Optional<Staff> findByUserAndDeletedIsFalse(User user) {
+        return staffRepository.findByUserAndDeletedIsFalse(user);
     }
 }

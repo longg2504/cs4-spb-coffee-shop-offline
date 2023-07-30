@@ -16,6 +16,9 @@ import com.cg.service.upload.IUploadService;
 
 import com.cg.utils.UploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -53,7 +56,7 @@ public class ProductServiceImpl implements IProductService{
 
     @Override
     public Product save(Product product) {
-        return null;
+        return productRepository.save(product);
     }
 
     @Override
@@ -92,12 +95,15 @@ public class ProductServiceImpl implements IProductService{
     public Product update(Long id, ProductUpReqDTO productUpReqDTO,Category category) {
         ProductAvatar productAvatar = new ProductAvatar();
         productAvatarRepository.save(productAvatar);
-       uploadAndSaveProductImage(productUpReqDTO.toProductCreReqDTO(),productAvatar);
-       Product productUpdate = productUpReqDTO.toProductChangeImage(category);
+
+        uploadAndSaveProductImage(productUpReqDTO.toProductCreReqDTO(),productAvatar);
+
+        Product productUpdate = productUpReqDTO.toProductChangeImage(category);
         productUpdate.setId(id);
         productUpdate.setProductAvatar(productAvatar);
 
         productRepository.save(productUpdate);
+
 
         return productUpdate;
     }
@@ -111,6 +117,16 @@ public class ProductServiceImpl implements IProductService{
     @Override
     public List<ProductDTO> findAllByCategoryLike(Long categoryId) {
         return productRepository.findAllByCategoryLike(categoryId);
+    }
+
+    @Override
+    public List<ProductDTO> findProductByName(String keySearch) {
+        return productRepository.findProductByName(keySearch);
+    }
+
+    @Override
+    public Page<ProductDTO> findAllProductDTOPage(Pageable pageable) {
+        return productRepository.findAllProductDTOPage(pageable);
     }
 
     private void uploadAndSaveProductImage(ProductCreReqDTO productCreReqDTO, ProductAvatar productAvatar) {

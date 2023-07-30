@@ -11,6 +11,8 @@ import com.cg.service.product.IProductService;
 import com.cg.utils.AppUtils;
 import com.cg.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -46,6 +48,22 @@ public class ProductAPI {
 
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<Page<ProductDTO>> getAllProductDTO(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize) {
+        try {
+            Page<ProductDTO> productDTOS = productService.findAllProductDTOPage(PageRequest.of(page - 1, pageSize));
+
+            if (productDTOS.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(productDTOS, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/{productId}")
     public ResponseEntity<?> getById(@PathVariable Long productId) {
         Product product = productService.findById(productId).orElseThrow(() -> {
@@ -74,7 +92,7 @@ public class ProductAPI {
         return new ResponseEntity<>(productCreResDTO, HttpStatus.CREATED);
     }
 
-    @PatchMapping("edit/{productId}")
+    @PatchMapping("/edit/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable("productId") String productIdStr, @ModelAttribute ProductUpReqDTO productUpReqDTO,BindingResult bindingResult) {
         if (!validateUtils.isNumberValid(productIdStr)) {
             Map<String, String> data = new HashMap<>();
@@ -104,10 +122,20 @@ public class ProductAPI {
             throw new DataInputException("Mã danh mục không tồn tại");
         });
 
-        Product productUpdate = productService.update(productId, productUpReqDTO,category);
-        ProductUpResDTO productUpResDTO = productUpdate.toProductUpResDTO();
+        if (productUpReqDTO.getAvatar() == null) {
+            Product product = productUpReqDTO.toProductChangeImage(category);
+            product.setId(productOptional.get().getId());
+            product.setProductAvatar(productOptional.get().getProductAvatar());
+            productService.save(product);
+            return new ResponseEntity<>(product.toProductUpResDTO(), HttpStatus.OK);
+        }
+        else {
+            Product productUpdate = productService.update(productId,productUpReqDTO,category);
+            ProductUpResDTO productUpResDTO = productUpdate.toProductUpResDTO();
+            return new ResponseEntity<>(productUpResDTO, HttpStatus.OK);
+        }
 
-        return new ResponseEntity<>(productUpResDTO, HttpStatus.OK);
+
     }
 
     @DeleteMapping("/{productId}")
@@ -137,5 +165,12 @@ public class ProductAPI {
          List<ProductDTO> productDTO  = productService.findAllByCategoryLike(categoryId);
 
          return new ResponseEntity<>(productDTO,HttpStatus.OK);
+    }
+
+    @GetMapping("/searchName/{keySearch}")
+    public ResponseEntity<List<ProductDTO>> getProductByName(@PathVariable("keySearch") String keySearch){
+        keySearch = '%' + keySearch + '%';
+        List<ProductDTO> productDTO = productService.findProductByName(keySearch);
+        return new ResponseEntity<>(productDTO,HttpStatus.OK);
     }
 }

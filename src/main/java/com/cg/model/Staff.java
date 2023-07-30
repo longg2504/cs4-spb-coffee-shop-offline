@@ -45,7 +45,7 @@ public class Staff extends BaseEntity {
 
     public StaffDTO toStaffDTO() {
         return new StaffDTO()
-                .setId(id)
+                .setId(String.valueOf(id))
                 .setTitle(title)
                 .setAddress(address)
                 .setPhone(phone)

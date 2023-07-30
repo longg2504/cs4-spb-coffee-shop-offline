@@ -1,5 +1,6 @@
 package com.cg.model.dto.bill;
 
+import com.cg.model.Order;
 import com.cg.model.dto.order.OrderDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,15 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class BillDTO {
+
     private Long id;
-    private BigDecimal totalPrice;
+    private BigDecimal totalAmount;
     private OrderDTO order;
+
+    public BillDTO(Long id, BigDecimal totalAmount, Order order) {
+        this.id = id;
+        this.totalAmount = totalAmount;
+        this.order = order.toOrderDTO();
+    }
 }
+

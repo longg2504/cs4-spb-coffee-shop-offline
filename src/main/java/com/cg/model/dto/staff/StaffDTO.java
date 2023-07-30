@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 public class StaffDTO {
-    private Long id;
+    private String id;
 
     private  String title;
 
