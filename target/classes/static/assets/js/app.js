@@ -15,6 +15,8 @@ class App {
 
     static API_CATEGORY = this.API_SERVER + '/category'
 
+    static API_BILL = this.API_SERVER + '/bills';
+
     static API_AUTH = this.API_SERVER + "/auth";
     static API_LOGIN = this.API_AUTH + "/login";
     static API_REGISTER = this.API_AUTH + "/register";
@@ -93,6 +95,26 @@ class App {
         });
     }
 
+    static IziToast = class {
+        static showSuccessAlert(m) {
+            iziToast.success({
+                title: 'OK',
+                position: 'bottomRight',
+                timeout: 2500,
+                message: m
+            });
+        }
+
+        static showErrorAlert(m) {
+            iziToast.error({
+                title: 'Error',
+                position: 'topRight',
+                timeout: 2500,
+                message: m
+            });
+        }
+    }
+
     static SweetAlert = class {
         static showDeleteConfirmDialog() {
             return Swal.fire({
@@ -110,7 +132,7 @@ class App {
             Swal.fire({
                 icon: 'success',
                 title: t,
-                position: 'top-end',
+                position: 'center',
                 showConfirmButton: false,
                 timer: 1500
             })

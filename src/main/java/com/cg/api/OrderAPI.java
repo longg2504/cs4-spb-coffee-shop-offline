@@ -73,17 +73,27 @@ public class OrderAPI {
     }
 
     @GetMapping("/list-order-details/{tableId}")
-    public ResponseEntity<?> getOrderItemById(@PathVariable Long tableId) {
+    public ResponseEntity<?> getListOrderDetailByTableId(@PathVariable("tableId") String tableIdStr){
+        if (!validateUtils.isNumberValid(tableIdStr)) {
+            throw new DataInputException("Mã bàn không hợp lệ");
+        }
+        Long tableId = Long.valueOf(tableIdStr);
+
         Optional<Order> orderOptional = orderService.findByTableId(tableId);
-        if (!orderOptional.isPresent()) {
-            throw new DataInputException("ID đơn đặt hàng không hợp lệ.");
+
+        if (orderOptional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        List<OrderDetailByTableResDTO> newOrderDetails = orderDetailService.getOrderDetailByTableResDTO(tableId);
-        if (newOrderDetails.size() == 0) {
-            throw new DataInputException("Đơn hàng trống");
+
+        List<OrderDetailByTableResDTO> orderDetails = orderDetailService.getOrderDetailByTableResDTO(orderOptional.get().getId());
+
+        if (orderDetails.size() == 0) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(newOrderDetails, HttpStatus.OK);
+
+        return new ResponseEntity<>(orderDetails, HttpStatus.OK);
     }
+
 
     // xóa order
     @DeleteMapping("/delete/orderDetail")
@@ -151,6 +161,40 @@ public class OrderAPI {
             return new ResponseEntity<>(orderDetailUpResDTO ,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/update/change-to-table")
+    public ResponseEntity<?> changeToTable(@RequestBody OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO) {
+        String username = appUtils.getPrincipalUsername();
+        Optional<User> userOptional = userService.findByName(username);
+
+        TableOrder tableOrderBusy = tableOrderService.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).orElseThrow(() -> {
+            throw new DataInputException("Bàn không tồn tại");
+        });
+        TableOrder tableOrderEmpty = tableOrderService.findById(orderUpChangeToTableReqDTO.getTableIdBusy()).orElseThrow(() -> {
+            throw new DataInputException("Bàn không tồn tại");
+        });
+
+        List<Order> orderEmptys = orderService.findByTableOrderAndPaid(tableOrderEmpty, false);
+        List<Order> orderBusys = orderService.findByTableOrderAndPaid(tableOrderBusy, false);
+
+        if (orderBusys.size() == 0) {
+            throw new DataInputException("Bàn chuyển này không có hoá đơn, vui lòng kiểm tra lại thông tin");
+        }
+
+        if (orderBusys.size() > 1) {
+            throw new DataInputException("Lỗi hệ thống, vui lòng liên hệ ADMIN để kiểm tra lại dữ liệu");
+        }
+
+        if (orderEmptys.size() == 0) {
+            throw new DataInputException("Bàn nhận này đang có hoá đơn, vui lòng kiểm tra lại thông tin");
+        }
+
+
+        OrderUpChangeToTableResDTO orderUpChangeToTableResDTO = orderService.changeToTable(orderUpChangeToTableReqDTO, userOptional.get());
+
+        return new ResponseEntity<>(orderUpChangeToTableResDTO, HttpStatus.OK);
+
     }
 
     @GetMapping("/get-username")

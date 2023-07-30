@@ -63,4 +63,9 @@ public class TableOrderServiceImpl implements ITableOrderService{
         TableOrderResDTO tableOrderResDTO = tableOrder.toUpdateTableOrderResDTO(tableOrderId);
         return tableOrderResDTO;
     }
+
+    @Override
+    public List<TableOrderDTO> findAllTablesWithoutSenderId(Long tableId) {
+        return tableOrderRepository.findAllTablesWithoutSenderId(tableId);
+    }
 }

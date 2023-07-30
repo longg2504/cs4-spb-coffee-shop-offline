@@ -21,7 +21,6 @@ public class BillReqDTO {
 
     public Bill toBill(Order orderId) {
         return new Bill()
-                .setId(null)
                 .setOrder(orderId)
                 .setTotalAmount(totalAmonut)
                 ;

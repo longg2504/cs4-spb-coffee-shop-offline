@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tableOrders")
@@ -34,6 +35,27 @@ public class TableOrderAPI {
         List<TableOrderDTO> tableOrderDTO = tableOrderService.findAllTableOrderDTO();
 
         return new ResponseEntity<>(tableOrderDTO,HttpStatus.OK);
+    }
+
+    @GetMapping("/{tableId}")
+    public ResponseEntity<?> getById(@PathVariable Long tableId){
+        Optional<TableOrder> tableOrderOptional = tableOrderService.findById(tableId);
+
+        if(tableOrderOptional.isEmpty()){
+
+            Map<String,String> data = new HashMap<>();
+            data.put("message" , "Khách hàng không tồn tại");
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(tableOrderOptional.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("/tables-without-tableSend/{tableId}")
+    public ResponseEntity<?> getAllTablesWithoutSender(@PathVariable Long tableId) {
+
+        List<TableOrderDTO> tableSelect = tableOrderService.findAllTablesWithoutSenderId(tableId);
+
+        return new ResponseEntity<>(tableSelect, HttpStatus.OK);
     }
 
     @PostMapping

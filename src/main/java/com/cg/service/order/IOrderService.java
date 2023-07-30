@@ -28,6 +28,8 @@ public interface IOrderService extends IGeneralService<Order,Long> {
 
     OrderDetailUpResDTO upOrderDetail(OrderUpReqDTO orderUpReqDTO, Order order, Product product, User user);
 
+    OrderUpChangeToTableResDTO changeToTable(OrderUpChangeToTableReqDTO orderUpChangeToTableReqDTO, User user);
+
 
 
 }

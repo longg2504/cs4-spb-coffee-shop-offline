@@ -65,10 +65,15 @@ public class BillServiceImpl implements IBillService {
         }
         tableOrder.setStatus(ETableStatus.EMPTY);
 
+        tableOrderRepository.save(tableOrder);
+
         Bill bill = new Bill();
         bill.setTotalAmount(order.getTotalAmount());
         bill.setOrder(order);
-        billRepository.save(bill);
+        bill = billRepository.save(bill);
+
+
+
         BillResDTO billResDTO = bill.toBillResDTO();
         return billResDTO;
     }

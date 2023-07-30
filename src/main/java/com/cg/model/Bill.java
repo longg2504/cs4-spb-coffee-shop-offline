@@ -33,8 +33,9 @@ public class Bill extends BaseEntity{
 
     public BillResDTO toBillResDTO() {
         return new BillResDTO()
-                .setId(null)
-                .setTotalAmount(totalAmount)
+                .setId(id)
+                .setTable(order.getTableOrder().toTableOrderDTO())
+                .setTotalAmount(BigDecimal.ZERO)
                 .setPaid(getOrder().getPaid())
                 .setOrderId(getOrder().getId())
                 ;

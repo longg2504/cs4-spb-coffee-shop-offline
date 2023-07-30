@@ -117,11 +117,14 @@
 
 <th:block th:replace="shop/modalProductDetail"/>
 <th:block th:replace="shop/modalPayment"/>
+<th:block th:replace="shop/modalChangeToTable"/>
 </body>
 <script src="/assets/jquery/jquery-3.7.0.min.js"></script>
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/bootstrap/v.5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="/assets/js/app.js"></script>
+
 
 
 
@@ -129,14 +132,18 @@
 <script>
     const page = {
         url: {
-            getAllProducts: App.API_PRODUCT,
             getALLTabOrders: App.API_TABLE_ORDER,
+            getAllTableSelect:App.API_TABLE_ORDER + '/tables-without-tableSend',
+            getTableById: App.API_TABLE_ORDER,
+            getAllProducts: App.API_PRODUCT,
             getProductById: App.API_PRODUCT,
             getOrderDetailsByTableId: App.API_ORDER_BY_TABLE_ID,
             getOrderByTableId : App.API_ORDER_BY_TABLE_ID,
             getProductByName:App.API_PRODUCT_SEARCH_NAME,
             createOrder: App.API_ORDER + '/create',
-            updateOrder: App.API_ORDER + '/update'
+            updateOrder: App.API_ORDER + '/update',
+            payBillOrder : App.API_BILL,
+            changToTable : App.API_ORDER +'/update/change-to-table'
         },
         elements: {},
         loadData: {},
@@ -180,8 +187,16 @@
     page.dialogs.elements.modalPayment = $('#modalPayment');
     page.elements.tbOrderItemsBody = $("#tbOrderItems tbody")
     page.dialogs.elements.btnPayment = $('#btnPayment');
+    page.dialogs.elements.btnPaymentOrder = $('#btnPaymentOrder');
+
+    page.dialogs.elements.modalChangToTable = $('#modalChangeToTable')
+    page.dialogs.elements.tableSend = $('#tableSend');
+    page.dialogs.elements.tableSelect = $('#tableSelect');
+    page.dialogs.elements.btnChangeToTable = $('#btnChangeToTable');
 
     page.elements.searchProduct = $('#searchProduct');
+
+
 
 
 
@@ -196,7 +211,7 @@
         return `
             <div id="tr_${tableOrder.id}" class="container-tab-item col-3" data-id="${tableOrder.id}" data-status="${tableOrder.status}">
               <div  class="tab-header text-center ${tableOrder.status === 'EMPTY' ? '' : 'busy'}">
-                <button style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
+                <button class="showModalTable" style="border: none; background-color: none; padding: 5px ; border-radius: 50%;">
                   <i class="fas fa-coffee"></i>
                 </button>
               </div>
@@ -262,6 +277,24 @@
         `;
     }
 
+    page.commands.renderListOrderDetailByTable = (obj) => {
+        return `
+                        <tr>
+                            <td class="text-center">${obj.title}</td>
+                            <td class="text-center">${obj.quantity}</td>
+                            <td class="text-center">${obj.price}</td>
+                            <td class="text-center">${obj.amount}</td>
+                        </tr>
+                `
+
+    }
+
+    page.commands.renderTableSelect = (tableOrder) => {
+        return `
+                <option value="${tableOrder.id}">${tableOrder.title}</option>
+            `;
+    }
+
     page.commands.getAllTable = () => {
         $.ajax({
             type: 'GET',
@@ -278,6 +311,35 @@
 
             })
     }
+
+    page.commands.getTableById = (tableId) => {
+        return $.ajax({
+            type: 'GET',
+            url: page.url.getTableById + '/' + tableId,
+        });
+    }
+
+    page.commands.getAllTableSelect = (TableSelectId) => {
+        $.ajax({
+            type: 'GET',
+            url: page.url.getAllTableSelect + '/' + TableSelectId
+        })
+            .done((data) => {
+
+                console.log(data)
+                page.dialogs.elements.tableSelect.empty();
+
+                $.each(data, (index, item) => {
+                    const str = page.commands.renderTableSelect(item);
+                    page.dialogs.elements.tableSelect.append(str);
+                })
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR)
+            })
+    }
+
+
 
     page.commands.getAllProduct = () => {
         page.elements.menuPannel.empty();
@@ -309,20 +371,26 @@
        })
            .done((data) => {
                if(data && data.length > 0) {
+                   let totalAmount = 0;
                    page.elements.tbOrderItemsBody.empty();
 
                    $.each(data, (index,item) => {
+                       totalAmount += item.amount;
+
                        let str = `
                         <tr>
                             <td class="text-center">${item.title}</td>
                             <td class="text-center">${item.quantity}</td>
                             <td class="text-center">${item.note}</td>
-                            <td class="text-center">${item.price}</td>
-                            <td class="text-center">${item.amount}</td>
+                            <td class="text-center">${item.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</td>
+                            <td class="text-center">${item.amount.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</td>
+
                         </tr>
+
                 `
                        page.elements.tbOrderItemsBody.append(str);
                    })
+
                }
            })
            .fail((jqXHR) => {
@@ -338,13 +406,28 @@
             .done((data) => {
                 if (data && data.length > 0) {
                     page.elements.contentItems.empty();
-
+                    page.elements.tbOrderItemsBody.empty();
+                    $('#totalAmountModal').empty();
                     let totalAmount = 0;
                     $.each(data, (index, item) => {
                         const str = page.commands.renderOrderDetail(item);
                         page.elements.contentItems.append(str);
                         totalAmount += item.amount;
+
+                        const str1 = page.commands.renderListOrderDetailByTable(item)
+                        page.elements.tbOrderItemsBody.append(str1);
+
+
                     })
+                    let strTotal = totalAmount.toLocaleString(('vi', {style: 'currency', currency: 'VND'}));
+                    console.log(strTotal)
+                    let str2 = `
+                           <td></td>
+                           <td></td>
+                           <td></td>
+                           <td class="text-center">Tổng tiền : ${strTotal}</td>
+                   `
+                    $('#totalAmountModal').prepend(str2);
 
                     $('#totalAmount').text(totalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}))
 
@@ -405,6 +488,23 @@
         page.dialogs.elements.modalPayment.modal('show');
     }
 
+    page.commands.handAddEventShowChangeToTable = () => {
+        console.log("currentTable", currentTable)
+        page.commands.getTableById(currentTable).then((data) => {
+            if(data !== {}){
+                page.dialogs.elements.tableSend.val(data.title);
+                page.commands.getAllTableSelect(currentTable);
+                page.dialogs.elements.modalChangToTable.modal('show');
+            }
+        })
+            .catch((error) => {
+                console.log(error);
+            });
+        // page.dialogs.elements.modalChangToTable.modal('show');
+    }
+
+
+
     page.commands.doCreateOrder = (currentTableId,productId,quantity,note) => {
         let obj = {
             tableId : currentTableId,
@@ -424,8 +524,6 @@
             data: JSON.stringify(obj)
         })
             .done((data) => {
-                console.log("doOrder ========")
-                console.log(data)
                 page.elements.contentItems.empty();
 
                 tableStatus = 'BUSY';
@@ -445,6 +543,7 @@
 
                 // page.commands.getAllTable(data.tableId)
                 // page.commands.getOrderDetailsByTableId(data.tableId);
+                App.SweetAlert.showSuccessAlert("Tạo đơn thành công ")
                 page.dialogs.elements.modalProductDetail.modal('hide');
             })
 
@@ -468,8 +567,6 @@
             data: JSON.stringify(obj)
         })
             .done((data) => {
-                console.log("doOrder ========")
-                console.log(data);
                 page.elements.contentItems.empty();
 
                 let totalAmount = data.totalAmount;
@@ -491,11 +588,84 @@
 
                 // page.commands.getAllTable(data.tableId)
                 // page.commands.getOrderDetailsByTableId(data.tableId);
+                App.SweetAlert.showSuccessAlert("Thêm món thành công");
                 page.dialogs.elements.modalProductDetail.modal('hide');
 
 
             })
     }
+
+    page.commands.doPaymentOrder = (currentTableId) => {
+        let obj = {
+            tableId : currentTableId
+        }
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'POST',
+            url: page.url.payBillOrder + '/' +currentTableId ,
+            data: JSON.stringify(obj)
+        })
+            .done((data) => {
+
+                console.log("doPaymentOrder", data)
+
+                page.elements.contentItems.empty();
+                tableStatus = 'EMPTY';
+                let totalAmount = data.totalAmount;
+                let items = data.products;
+
+                $.each(items, (index, item) => {
+                    const str = page.commands.renderOrderDetail(item);
+                    page.elements.contentItems.append(str);
+                })
+
+                console.log("doPaymentOrder currentTableId", data)
+                const tableStr = page.commands.renderTable(data.table);
+                $('#tr_' + currentTableId).replaceWith(tableStr);
+
+
+                $('#totalAmount').text(totalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}))
+
+                App.SweetAlert.showSuccessAlert("Thanh toán thành công");
+                page.dialogs.elements.modalPayment.modal('hide');
+
+
+            })
+            .fail(() =>{
+
+            })
+    }
+
+    page.commands.doChangeToTable = (currentTable) => {
+        const tableIdBusy = currentTable;
+        const tableIdEmpty = page.dialogs.elements.tableSelect.val();
+
+        let obj = {
+            tableIdEmpty,
+            tableIdBusy
+        }
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'PATCH',
+            url: page.url.changToTable ,
+            data: JSON.stringify(obj)
+        })
+            .done((data) =>{
+                const SenderTable = data.tableId;
+                const SelectTable = data.tableSelect;
+
+
+            })
+
+
+    }
+
 
     page.commands.showHideSearchDiv = () => {
         if (page.elements.menuPannel.hasClass('active','show')) {
@@ -539,15 +709,32 @@
             }
         })
 
+
+
         page.dialogs.elements.btnPayment.on('click' , function(){
-            console.log(currentTable)
-                page.commands.getListOrderDetailByTableId(currentTable);
-                page.commands.handleAddEventShowPayment();
+            $('#tableId').empty();
+            let str = `
+                <span>Chi tiết hoá đơn bàn ${currentTable}</span>
+            `
+            page.commands.getOrderDetailsByTableId(currentTable);
+            page.commands.handleAddEventShowPayment();
+            $('#tableId').append(str);
+        })
 
-
-
+        page.dialogs.elements.btnPaymentOrder.on('click', function(){
+            page.commands.doPaymentOrder(currentTable);
 
         })
+
+        page.dialogs.elements.btnChangeToTable.on('click' , function(){
+            page.commands.doChangeToTable(currentTable)
+        })
+
+        page.elements.tablePannel.on('click','.showModalTable' ,function(){
+            currentTable = $(this).parent().parent().data('id');
+            page.commands.handAddEventShowChangeToTable(currentTable);
+        })
+
 
 
         page.elements.menuPannel.on('click', '.container-product-item', function() {
