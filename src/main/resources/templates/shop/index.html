@@ -616,7 +616,6 @@
                     page.elements.contentItems.append(str);
                 })
 
-                console.log("doPaymentOrder currentTableId", data)
                 const tableStr = page.commands.renderTable(data.table);
                 $('#tr_' + currentTableId).replaceWith(tableStr);
 
@@ -650,20 +649,20 @@
             url: page.url.changToTable,
             data: JSON.stringify(obj)
         })
-            .done((data) => {
+            .done((data) =>{
 
-
-                const senderTable = data.tableReceive;
+                const senderTable = data.tableSelect;
                 const receiveTable = data.tableSend;
 
-                const senderTableStr = page.commands.getAllTable(senderTable);
+                const senderTableStr = page.commands.renderTable(senderTable);
                 $('#tr_' + senderTable.id).replaceWith(senderTableStr);
 
-                const receiveTableStr = page.commands.getAllTable(receiveTable);
+                const receiveTableStr = page.commands.renderTable(receiveTable);
                 $('#tr_' + receiveTable.id).replaceWith(receiveTableStr);
 
-                page.dialogs.elements.modalChangToTable.modal('hide');
                 App.showSuccessAlert('Chuyển bàn thành công');
+                page.dialogs.elements.modalChangToTable.modal('hide');
+
             })
 
 
