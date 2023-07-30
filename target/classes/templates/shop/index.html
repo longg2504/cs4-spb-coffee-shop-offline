@@ -172,6 +172,7 @@
 
     page.dialogs.elements.modalProductDetail = $('#modalProductDetail');
     page.dialogs.elements.frmProductDetail = $('#frmProductDetail');
+    page.dialogs.elements.errorAreaProductDetail = $('#modalProductDetail .error-area');
     page.dialogs.elements.imgPro = $('#imgPro');
     page.dialogs.elements.idPro = $('.idPro');
     page.dialogs.elements.titlePro = $('#titlePro');
@@ -250,7 +251,7 @@
             <div class="item-content" style="margin-left: 10px;">
                 <div class="title-close d-flex justify-content-between">
                     <span>${obj.title}</span>
-                    <button>
+                    <button id="btnDelete">
                         <span>X</span>
                     </button>
                 </div>
@@ -542,6 +543,20 @@
                 App.SweetAlert.showSuccessAlert("Tạo đơn thành công ")
                 page.dialogs.elements.modalProductDetail.modal('hide');
             })
+            .fail((jqXHR) => {
+                const responseJSON = jqXHR.responseJSON;
+
+                page.dialogs.elements.errorAreaProductDetail.empty();
+                let str = '';
+
+                $.each(responseJSON, (k, v) => {
+                    str += `<label for="${k}">${v}</label>`
+                })
+
+                page.dialogs.elements.errorAreaProductDetail.append(str).removeClass('hide').addClass('show');
+
+                console.log(jqXHR);
+            })
 
     }
 
@@ -587,12 +602,27 @@
                 App.SweetAlert.showSuccessAlert("Thêm món thành công");
                 page.dialogs.elements.modalProductDetail.modal('hide');
             })
+            .fail((jqXHR) => {
+                const responseJSON = jqXHR.responseJSON;
+
+                page.dialogs.elements.errorAreaProductDetail.empty();
+                let str = '';
+
+                $.each(responseJSON, (k, v) => {
+                    str += `<label for="${k}Pro">${v}</label>`
+                })
+
+                page.dialogs.elements.errorAreaProductDetail.append(str).removeClass('hide').addClass('show');
+
+                console.log(jqXHR);
+            })
     }
 
     page.commands.doPaymentOrder = (currentTableId) => {
         let obj = {
             tableId: currentTableId
         }
+
         $.ajax({
             headers: {
                 'accept': 'application/json',
@@ -616,7 +646,6 @@
                     page.elements.contentItems.append(str);
                 })
 
-                console.log("doPaymentOrder currentTableId", data)
                 const tableStr = page.commands.renderTable(data.table);
                 $('#tr_' + currentTableId).replaceWith(tableStr);
 
@@ -650,17 +679,23 @@
             url: page.url.changToTable,
             data: JSON.stringify(obj)
         })
-            .done((data) => {
-
+            .done((data) =>{
+                tableStatus = 'EMPTY';
 
                 const senderTable = data.tableReceive;
                 const receiveTable = data.tableSend;
 
-                const senderTableStr = page.commands.getAllTable(senderTable);
+                const senderTableStr = page.commands.renderTable(senderTable);
                 $('#tr_' + senderTable.id).replaceWith(senderTableStr);
 
-                const receiveTableStr = page.commands.getAllTable(receiveTable);
+
+                const receiveTableStr = page.commands.renderTable(receiveTable);
                 $('#tr_' + receiveTable.id).replaceWith(receiveTableStr);
+
+
+                page.elements.boardWaiting.removeClass('hide');
+                page.elements.contentItems.addClass('hide');
+                $('#totalAmount').text('0đ')
 
                 page.dialogs.elements.modalChangToTable.modal('hide');
                 App.showSuccessAlert('Chuyển bàn thành công');
@@ -701,14 +736,8 @@
         })
 
         page.dialogs.elements.btnOrderProduct.on('click', function () {
-            let productId = $('.idPro').val();
-            let quantity = $('#quantityPro').val();
-            let note = $('#notePro').val();
-            if (tableStatus == "EMPTY") {
-                page.commands.doCreateOrder(currentTable, productId, quantity, note);
-            } else {
-                page.commands.doUpdateOrder(currentTable, productId, quantity, note);
-            }
+            page.dialogs.elements.frmProductDetail.trigger('submit');
+
         })
 
 
@@ -737,6 +766,8 @@
         })
 
 
+
+
         page.elements.menuPannel.on('click', '.container-product-item', function () {
             const productId = $(this).data('id');
 
@@ -756,10 +787,7 @@
                     <div class="col-12" style="margin-top:28px">
                         <p id="titlePro"  style="font-size: 22px">${data.title}</p>
                         <div class="price">
-                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {
-                    style: 'currency',
-                    currency: 'VND'
-                })}</span></p>
+                            <p>Giá : <span id="pricePro">${data.price.toLocaleString('vi', {style: 'currency', currency: 'VND'})}</span></p>
                         </div>
                         <div class="quantityProductDetail">
                             <p>
@@ -806,6 +834,43 @@
         page.loadData();
 
         page.initializeControlEvent();
+    })
+
+    //validate Front-End
+    page.dialogs.elements.frmProductDetail.validate({
+        rules: {
+            quantityPro: {
+                required: true
+            }
+        },
+        messages: {
+            quantityPro: {
+                required: 'Số lượng của món phải lớn hơn 0'
+            }
+        },
+        errorLabelContainer: "#modalProductDetail .error-area",
+        errorPlacement: function (error, element) {
+            error.appendTo("#modalProductDetail .error-area");
+        },
+        showErrors: function (errorMap, errorList) {
+            if (this.numberOfInvalids() > 0) {
+                page.dialogs.elements.errorAreaProductDetail.removeClass("hide").addClass("show");
+            } else {
+                page.dialogs.elements.errorAreaProductDetail.removeClass("show").addClass("hide").empty();
+                $("#frmProductDetail input.error").removeClass("error");
+            }
+            this.defaultShowErrors();
+        },
+        submitHandler: function () {
+            let productId = $('.idPro').val();
+            let quantity = $('#quantityPro').val();
+            let note = $('#notePro').val();
+            if (tableStatus == "EMPTY") {
+                page.commands.doCreateOrder(currentTable, productId, quantity, note);
+            } else {
+                page.commands.doUpdateOrder(currentTable, productId, quantity, note);
+            }
+        }
     })
 
 

@@ -18,7 +18,6 @@ public class StaffDTO {
 
     private  String title;
 
-
     private String address;
 
     private String phone;

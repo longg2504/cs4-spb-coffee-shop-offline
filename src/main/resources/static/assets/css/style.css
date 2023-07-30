@@ -298,3 +298,19 @@ body {
 .search input {
     border: 1px solid rgb(114, 102, 186);
 }
+
+.error-area {
+    background-color: #ffd8d8;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.error-area.show label {
+    display: list-item;
+    color: #be0f0f;
+    margin-left: 20px;
+}
+
+input.error {
+    border-color: red;
+}
