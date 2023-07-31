@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/assets/bootstrap/v.5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/iziToast/iziToast-1.4.0.min.css">
     <link rel="stylesheet" href="/assets/fontawesome/v-5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
 <body>
@@ -92,7 +93,7 @@
                             <p class="title-complaint">Vui lòng chọn bàn hoặc món trong menu</p>
 
                         </div>
-                        <div class="content-items hide">
+                        <div id="contentItems" class="content-items hide">
 
                         </div>
                     </div>
@@ -123,6 +124,7 @@
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/bootstrap/v.5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="/assets/iziToast/iziToast-1.4.0.js"></script>
 <script src="/assets/js/app.js"></script>
 
 
@@ -140,7 +142,8 @@
             createOrder: App.API_ORDER + '/create',
             updateOrder: App.API_ORDER + '/update',
             payBillOrder: App.API_BILL,
-            changToTable: App.API_ORDER + '/update/change-to-table'
+            changToTable: App.API_ORDER + '/update/change-to-table',
+            deleteProductByOrderDetailId: App.API_ORDER + '/delete'
         },
         elements: {},
         loadData: {},
@@ -160,7 +163,7 @@
     page.elements.Search = $('#container-content-left');
     page.elements.divSearchProduct = $('#div-search-product');
     page.elements.boardWaiting = $('.board');
-    page.elements.contentItems = $('.content-items');
+    page.elements.contentItems = $('#contentItems');
     page.elements.btnShowHide = $('#btnShowHide');
     page.elements.tabHeader = $('.tab-header');
     page.elements.tabContentItem = $('.tab-content-item');
@@ -244,14 +247,14 @@
 
     page.commands.renderOrderDetail = (obj) => {
         return `
-        <div class="item d-flex">
+        <div class="item d-flex" id="div_${obj.orderDetailId}">
             <div class="image">
                 <img src="${obj.avatar.fileUrl}" style="height: 115px; width: 120px;" alt="">
             </div>
             <div class="item-content" style="margin-left: 10px;">
                 <div class="title-close d-flex justify-content-between">
                     <span>${obj.title}</span>
-                    <button id="btnDelete">
+                    <button class="btn-delete" data-order-detail-id="${obj.orderDetailId}" data-amount="${obj.amount}">
                         <span>X</span>
                     </button>
                 </div>
@@ -359,7 +362,7 @@
     }
 
     page.commands.getListOrderDetailByTableId = (tableId) => {
-        $.ajax({
+        return $.ajax({
             type: 'GET',
             url: page.url.getOrderDetailsByTableId + '/list-order-details' + tableId
         })
@@ -545,12 +548,11 @@
             })
             .fail((jqXHR) => {
                 const responseJSON = jqXHR.responseJSON;
-
                 page.dialogs.elements.errorAreaProductDetail.empty();
                 let str = '';
 
                 $.each(responseJSON, (k, v) => {
-                    str += `<label for="${k}">${v}</label>`
+                    str += `<label for="${k}Pro">${v}</label>`
                 })
 
                 page.dialogs.elements.errorAreaProductDetail.append(str).removeClass('hide').addClass('show');
@@ -612,7 +614,7 @@
                     str += `<label for="${k}Pro">${v}</label>`
                 })
 
-                page.dialogs.elements.errorAreaProductDetail.append(str).removeClass('hide').addClass('show');
+                page.dialogs.elements.errorAreaProductDetail.append(str).removeClass('hide').removeAttr('style').addClass('show');
 
                 console.log(jqXHR);
             })
@@ -633,9 +635,6 @@
             data: JSON.stringify(obj)
         })
             .done((data) => {
-
-                console.log("doPaymentOrder", data)
-
                 page.elements.contentItems.empty();
                 tableStatus = 'EMPTY';
                 let totalAmount = data.totalAmount;
@@ -648,6 +647,7 @@
 
                 const tableStr = page.commands.renderTable(data.table);
                 $('#tr_' + currentTableId).replaceWith(tableStr);
+
 
 
                 $('#totalAmount').text(totalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}))
@@ -691,7 +691,7 @@
 
                 const receiveTableStr = page.commands.renderTable(receiveTable);
                 $('#tr_' + receiveTable.id).replaceWith(receiveTableStr);
-
+                console.log(receiveTable);
 
                 page.elements.boardWaiting.removeClass('hide');
                 page.elements.contentItems.addClass('hide');
@@ -740,20 +740,57 @@
 
         })
 
+        page.elements.contentItems.on('click', '.btn-delete', function () {
+            const orderDetailId = $(this).data('order-detail-id');
+            const amount = $(this).data('amount');
+
+            App.SweetAlert.showDeleteConfirmDialog().then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: page.url.deleteProductByOrderDetailId + '/' + orderDetailId
+                    })
+                        .done(() => {
+                            $('#div_' + orderDetailId).remove();
+                            let totalAmount = $('#totalAmount').text();
+                            totalAmount = totalAmount.replace('₫', '');
+                            totalAmount = totalAmount.replace('.', '');
+                            const newTotalAmount = totalAmount - amount;
+                            $('#totalAmount').text(newTotalAmount.toLocaleString('vi', {style: 'currency', currency: 'VND'}));
+                        })
+                        .fail((jqXHR) => {
+                            console.log(jqXHR);
+                            App.IziToast.showErrorAlert('Xoá sản phẩm thất bại');
+                        })
+                }
+            })
+
+
+
+
+
+        })
+
 
         page.dialogs.elements.btnPayment.on('click', function () {
-            $('#tableId').empty();
-            let str = `
-                <span>Chi tiết hoá đơn bàn ${currentTable}</span>
-            `
-            page.commands.getOrderDetailsByTableId(currentTable);
-            page.commands.handleAddEventShowPayment();
-            $('#tableId').append(str);
+            page.commands.getOrderDetailsByTableId(currentTable).then((data) => {
+                if (data !== undefined && data !== null && data.length > 0) {
+                    $('#tableId').empty();
+                    let str = `
+                        <span>Chi tiết hoá đơn bàn ${currentTable}</span>
+                    `
+
+                    page.commands.handleAddEventShowPayment();
+                    $('#tableId').append(str);
+                }
+                else {
+                    App.IziToast.showErrorAlert('Bàn này không có hoá đơn');
+                }
+            });
         })
 
         page.dialogs.elements.btnPaymentOrder.on('click', function () {
             page.commands.doPaymentOrder(currentTable);
-
         })
 
         page.dialogs.elements.btnChangeToTable.on('click', function () {
@@ -793,7 +830,7 @@
                             <p>
                                 Số Lượng
                                 <span>
-                                    <input id="quantityPro" class="col-6" type="number" min="1" max="20" value="1">
+                                    <input id="quantityPro" name="quantityPro" class="col-6" type="number" value="1">
                                 </span>
                             </p>
 
@@ -840,12 +877,14 @@
     page.dialogs.elements.frmProductDetail.validate({
         rules: {
             quantityPro: {
-                required: true
+                required: true,
+                min: 1
             }
         },
         messages: {
             quantityPro: {
-                required: 'Số lượng của món phải lớn hơn 0'
+                required: 'Số lượng của món phải lớn hơn 0',
+                min: 'So luong it nhat la {0}'
             }
         },
         errorLabelContainer: "#modalProductDetail .error-area",

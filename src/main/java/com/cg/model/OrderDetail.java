@@ -55,7 +55,7 @@ public class OrderDetail extends BaseEntity {
 
     public OrderDetailProductUpResDTO toOrderDetailProductUpResDTO() {
         return new OrderDetailProductUpResDTO()
-                .setId(id)  
+                .setOrderDetailId(id)
                 .setProductId(product.getId())
                 .setTitle(product.getTitle())
                 .setPrice(price)

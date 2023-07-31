@@ -62,7 +62,7 @@
             <li class="dropdown notification-list">
                 <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown"
                    href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                    <span class="pro-user-name ml-1" th:text="${username}">
+                    <span class="pro-user-name ml-1" th:text="${userName}">
                                 <i class="fa-solid fa-chevron-down"></i>
                             </span>
                 </a>
@@ -81,7 +81,7 @@
                     <div class="dropdown-divider"></div>
 
                     <!-- item-->
-                    <a href=" " class="dropdown-item notify-item logout-user">
+                    <a href="/logout" class="dropdown-item notify-item logout-user">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>Logout</span>
                     </a>

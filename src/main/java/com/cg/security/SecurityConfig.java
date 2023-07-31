@@ -68,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/",
                         "/api/auth/login",
                         "/api/auth/register",
-                        "/login/login",
+                        "/login",
                         "/logout",
                         "/api/test"
                 ).permitAll()
@@ -76,6 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/shop","/shop/**").hasAnyAuthority("USER")
                 .antMatchers("/resources/**", "/assets/**").permitAll()
 //                .antMatchers(
+//
 //                        "/v3/api-docs",
 //                        "/swagger-resources/configuration/ui",
 //                        "/configuration/ui",

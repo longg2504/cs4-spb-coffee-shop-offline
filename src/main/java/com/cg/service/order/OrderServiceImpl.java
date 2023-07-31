@@ -61,7 +61,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public void delete(Order order) {
-
+        orderRepository.delete(order);
     }
 
     @Override
@@ -345,12 +345,23 @@ public class OrderServiceImpl implements IOrderService {
 
         Order orderBusy = orderRepository.findByTableId(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdBusy())).get();
 
+
+
+        Order newOrder = new Order();
         TableOrder emptyTable = tableOrderRepository.findById(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdEmpty())).get();
         emptyTable.setStatus(ETableStatus.BUSY);
         tableOrderRepository.save(emptyTable);
-
-        orderBusy.setTableOrder(emptyTable);
-        orderRepository.save(orderBusy);
+        newOrder.setTableOrder(emptyTable);
+        newOrder.setTotalAmount(orderBusy.getTotalAmount());
+        newOrder.setStaff(orderBusy.getStaff());
+        newOrder.setPaid(orderBusy.getPaid());
+        orderRepository.save(newOrder);
+        List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrder(orderBusy);
+        for(OrderDetail item : orderDetails) {
+            item.setOrder(newOrder);
+            orderDetailRepository.save(item);
+        }
+        orderRepository.delete(orderBusy);
 
         TableOrder busyTable = tableOrderRepository.findById(Long.valueOf(orderUpChangeToTableReqDTO.getTableIdBusy())).get();
         busyTable.setStatus(ETableStatus.EMPTY);
@@ -366,6 +377,8 @@ public class OrderServiceImpl implements IOrderService {
         return orderUpChangeToTableResDTO;
     }
 
+
+    @Override
     public BigDecimal getOrderTotalAmount(Long orderId) {
         return orderRepository.getOrderTotalAmount(orderId);
     }

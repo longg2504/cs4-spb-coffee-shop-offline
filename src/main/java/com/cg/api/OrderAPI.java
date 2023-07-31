@@ -95,19 +95,6 @@ public class OrderAPI {
     }
 
 
-    // xóa order
-    @DeleteMapping("/delete/orderDetail")
-    public ResponseEntity<?> deleteOrder(OrderReqDTO orderReqDTO) {
-        Long tableId = Long.valueOf(orderReqDTO.getTableOrder().getId());
-        TableOrder tableOrder = tableOrderService.findById(tableId).get();
-        if (tableOrder.getStatus() == ETableStatus.EMPTY) {
-            throw new DataInputException("Bàn không có sản phẩm nào");
-        } else {
-            OrderResDTO orderResDTO = orderService.deleteByIdOrder(orderReqDTO, tableOrder);
-            return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
-        }
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> creOrder(@RequestBody OrderCreReqDTO orderCreReqDTO, BindingResult bindingResult) {
         String username = appUtils.getPrincipalUsername();
@@ -213,6 +200,29 @@ public class OrderAPI {
 
         return new ResponseEntity<>(orderUpChangeToTableResDTO, HttpStatus.OK);
 
+    }
+
+    // xóa order
+    @DeleteMapping("/delete/{orderDetailId}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long orderDetailId) {
+//        Long tableId = Long.valueOf(orderReqDTO.getTableOrder().getId());
+//        TableOrder tableOrder = tableOrderService.findById(tableId).get();
+
+        OrderDetail orderDetail = orderDetailService.findById(orderDetailId).orElseThrow(() -> {
+           throw new DataInputException("Vui lòng kiểm tra lại thông tin");
+        });
+
+        orderDetailService.delete(orderDetail);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+
+//        if (tableOrder.getStatus() == ETableStatus.EMPTY) {
+//            throw new DataInputException("Bàn không có sản phẩm nào");
+//        } else {
+//            OrderResDTO orderResDTO = orderService.deleteByIdOrder(orderReqDTO, tableOrder);
+//            return new ResponseEntity<>(orderResDTO, HttpStatus.OK);
+//        }
     }
 
     @GetMapping("/get-username")
